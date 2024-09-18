@@ -1,3 +1,5 @@
+import statistics
+
 class Graph:
     
     def __init__(self) -> None:
@@ -6,6 +8,8 @@ class Graph:
         self.node_degrees = {}
         self.lowest_graded_node = None
         self.highest_graded_node = None
+        self.mean_grade = 0
+        self.median_grade = 0
 
     def initialize_graph_from_txt(self, file_name: str) -> None:
         try:
@@ -27,12 +31,23 @@ class Graph:
                         self.node_degrees[destination] += 1
                     else:
                         print(f"Invalid link data: {line.strip()}")
-                
-                self._calculate_node_grades()
+                self.min_degree = min(self.node_degrees.values())
+                self.max_degree = max(self.node_degrees.values())
+                self._calculate_node_metrics()
         except FileNotFoundError:
             print(f"The file '{file_name}' was not found.")
 
-    def _calculate_node_grades(self) -> None:
+    def write_info_file(self, filename: str) -> None:
+        with open(filename, "w") as file:
+            file.write(f"{self.graph_size}\n")
+            file.write(f"{len(self.graph_links)}\n")
+            file.write(f"{self.min_degree}\n")
+            file.write(f"{self.max_degree}\n")
+            file.write(f"{self.mean_grade}\n")
+            file.write(f"{self.median_grade}\n")
+
+    def _calculate_node_metrics(self) -> None:
         if self.node_degrees:
-            self.lowest_graded_node = min(self.node_degrees, key=self.node_degrees.get)
-            self.highest_graded_node = max(self.node_degrees, key=self.node_degrees.get)
+            degrees = list(self.node_degrees.values())
+            self.mean_grade = sum(degrees) / len(degrees)
+            self.median_grade = statistics.median(degrees)
