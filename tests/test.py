@@ -10,6 +10,12 @@ def test_read(filename: str, graph: Graph) -> Graph:
     graph.initialize_graph_from_txt(filename)
     return graph
 
+def test_info_file(graph: Graph, filename: str) -> None:
+    graph.write_info_file(filename)
+    return
+
 graph = Graph()
 graph = test_read(r"data\grafo_1.txt", graph)
+test_info_file(graph, r"data\grafo_1_info.txt")
+
 True
