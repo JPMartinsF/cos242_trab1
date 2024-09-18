@@ -30,8 +30,8 @@ class Graph:
                 
                 self._calculate_node_grades()
         except FileNotFoundError:
-            raise FileNotFoundError
-    
+            print(f"The file '{file_name}' was not found.")
+
     def _calculate_node_grades(self) -> None:
         if self.node_degrees:
             self.lowest_graded_node = min(self.node_degrees, key=self.node_degrees.get)
