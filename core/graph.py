@@ -2,7 +2,7 @@ import statistics
 import numpy as np
 
 class Graph:
-    
+
     def __init__(self) -> None:
         self.graph_size = 0
         self.graph_links = []
@@ -14,38 +14,45 @@ class Graph:
         self.min_degree = None
         self.max_degree = None
         self.adjacency_matrix = None
+        self.adjacency_list = {}
 
     def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
         try:
-            with open(file_name, "r") as file:
+            with open(file_name, "r", encoding="utf-8") as file:
                 self.graph_size = int(file.readline().strip())
                 self.graph_links = []
                 
-                match representation:
-                    case "Adjacency Matrix":
-                        self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
-                    case _:
-                        print(f"Unsupported representation: {representation}")
-                        return
+                if representation == "Adjacency Matrix":
+                    self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
+                elif representation == "Adjacency List":
+                    self.adjacency_list = {i: [] for i in range(1, self.graph_size + 1)}
+                else:
+                    print(f"Unsupported representation: {representation}")
+                    return
 
                 for line in file.readlines():
                     link_data = list(map(int, line.split())) 
                     if len(link_data) == 2:
-                        u, v = link_data
-                        self.graph_links.append((u, v))
+                        u_node, v_node = link_data
+                        self.graph_links.append((u_node, v_node))
                         
-                        self.node_degrees[u] = self.node_degrees.get(u, 0) + 1
-                        self.node_degrees[v] = self.node_degrees.get(v, 0) + 1
+                        self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
+                        self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
                         
-                        self.adjacency_matrix[u - 1][v - 1] = 1
-                        self.adjacency_matrix[v - 1][u - 1] = 1  
+                        if representation == "Adjacency Matrix":
+                            self.adjacency_matrix[u_node - 1][v_node - 1] = 1
+                            self.adjacency_matrix[v_node - 1][u_node - 1] = 1
+                        
+                        elif representation == "Adjacency List":
+                            self.adjacency_list[u_node].append(v_node)
+                            self.adjacency_list[v_node].append(u_node)
                     else:
                         print(f"Invalid link data: {line.strip()}")
                 
                 self._calculate_node_metrics()
 
         except FileNotFoundError:
-            print(f"The file '{file_name}' was not found.")
+            print(f"File '{file_name}' not found.")
         except ValueError:
             print("Error: Invalid data format in the file.")
 
@@ -58,7 +65,7 @@ class Graph:
             self.median_grade = statistics.median(degrees)
 
     def write_info_file(self, filename: str) -> None:
-        with open(filename, "w") as file:
+        with open(filename, "w", encoding="utf-8") as file:
             file.write(f"Graph Size: {self.graph_size}\n")
             file.write(f"Number of Edges: {len(self.graph_links)}\n")
             file.write(f"Min Degree: {self.min_degree}\n")
