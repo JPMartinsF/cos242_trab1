@@ -1,4 +1,5 @@
 import statistics
+import numpy as np
 
 class Graph:
     
@@ -11,24 +12,30 @@ class Graph:
         self.mean_grade = 0
         self.median_grade = 0
 
-    def initialize_graph_from_txt(self, file_name: str) -> None:
+    def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
         try:
             with open(file_name, "r") as file:
                 self.graph_size = int(file.readline().strip())
                 self.graph_links = []
                 
+                match representation:
+                    case "Adjacency Matrix":
+                        self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
+
                 for line in file.readlines():
                     link_data = list(map(int, line.split())) 
                     if len(link_data) == 2:
-                        source, destination = link_data
-                        self.graph_links.append((source, destination))
+                        u, v = link_data
+                        self.graph_links.append((u, v))
                         
-                        if source not in self.node_degrees:
-                            self.node_degrees[source] = 0
-                        if destination not in self.node_degrees:
-                            self.node_degrees[destination] = 0
-                        self.node_degrees[source] += 1
-                        self.node_degrees[destination] += 1
+                        if u not in self.node_degrees:
+                            self.node_degrees[u] = 0
+                        if v not in self.node_degrees:
+                            self.node_degrees[v] = 0
+                        self.node_degrees[u] += 1
+                        self.node_degrees[v] += 1
+                        self.adjacency_matrix[u - 1][v - 1] = 1
+                        self.adjacency_matrix[v - 1][u - 1] = 1  
                     else:
                         print(f"Invalid link data: {line.strip()}")
                 self.min_degree = min(self.node_degrees.values())
