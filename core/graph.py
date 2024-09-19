@@ -38,8 +38,6 @@ class Graph:
                         self.adjacency_matrix[v - 1][u - 1] = 1  
                     else:
                         print(f"Invalid link data: {line.strip()}")
-                self.min_degree = min(self.node_degrees.values())
-                self.max_degree = max(self.node_degrees.values())
                 self._calculate_node_metrics()
         except FileNotFoundError:
             print(f"The file '{file_name}' was not found.")
@@ -55,6 +53,8 @@ class Graph:
 
     def _calculate_node_metrics(self) -> None:
         if self.node_degrees:
+            self.min_degree = min(self.node_degrees.values())
+            self.max_degree = max(self.node_degrees.values())
             degrees = list(self.node_degrees.values())
             self.mean_grade = sum(degrees) / len(degrees)
             self.median_grade = statistics.median(degrees)
