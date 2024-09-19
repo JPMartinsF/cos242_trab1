@@ -15,7 +15,7 @@ def test_info_file(graph: Graph, filename: str) -> None:
     return
 
 graph = Graph()
-graph = test_read(r"data\grafo_teste.txt", graph)
-test_info_file(graph, r"data\grafo_teste_info.txt")
+graph = test_read(r"data\test_graph.txt", graph)
+test_info_file(graph, r"data\test_graph_info.txt")
 
 True
