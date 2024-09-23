@@ -35,6 +35,7 @@ class Graph:
                 self.graph_size = int(file.readline().strip())
                 self.graph_links = []
                 
+                # Initialize graph representation
                 if representation == "Adjacency Matrix":
                     self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
                 elif representation == "Adjacency List":
@@ -42,15 +43,18 @@ class Graph:
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
+                # Process edges from file
                 for line in file.readlines():
                     link_data = list(map(int, line.split())) 
                     if len(link_data) == 2:
                         u_node, v_node = link_data
                         self.graph_links.append((u_node, v_node))
                         
+                        # Update node degrees
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
                         
+                        # Update adjacency matrix or list
                         if representation == "Adjacency Matrix":
                             self.adjacency_matrix[u_node - 1][v_node - 1] = 1
                             self.adjacency_matrix[v_node - 1][u_node - 1] = 1
@@ -60,6 +64,7 @@ class Graph:
                     else:
                         print(f"Invalid link data: {line.strip()}")
                 
+                # Calculate node degree metrics
                 self._calculate_node_metrics()
 
         except FileNotFoundError:
@@ -92,3 +97,92 @@ class Graph:
             file.write(f"Max Degree: {self.max_degree}\n")
             file.write(f"Mean Degree: {self.mean_grade}\n")
             file.write(f"Median Degree: {self.median_grade}\n")
+
+    def bfs(self, start_node: int, representation: str = "Adjacency List") -> list:
+        """
+        Chooses the appropriate BFS method based on the representation type.
+
+        Args:
+            start_node (int): The node from which to start BFS.
+            representation (str): The representation to use ('Adjacency Matrix' or 'Adjacency List').
+        
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        if representation == "Adjacency List":
+            return self.bfs_adjacency_list(start_node)
+        elif representation == "Adjacency Matrix":
+            return self.bfs_adjacency_matrix(start_node)
+        else:
+            print(f"Unsupported representation: {representation}")
+            return []
+
+    def bfs_adjacency_list(self, start_node: int) -> list:
+        """
+        Performs BFS using the adjacency list representation.
+
+        Args:
+            start_node (int): The node from which to start BFS.
+        
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        if not self.adjacency_list:
+            print("Adjacency list is not initialized.")
+            return []
+
+        if start_node not in self.adjacency_list:
+            print(f"Start node {start_node} is not in the graph.")
+            return []
+        
+        visited = set()
+        bfs_order = []
+        queue = [start_node]
+
+        visited.add(start_node)
+
+        while queue:
+            current_node = queue.pop(0)
+            bfs_order.append(current_node)
+
+            for neighbor in self.adjacency_list[current_node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
+        return bfs_order
+
+    def bfs_adjacency_matrix(self, start_node: int) -> list:
+        """
+        Performs BFS using the adjacency matrix representation.
+
+        Args:
+            start_node (int): The node from which to start BFS.
+        
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        if self.adjacency_matrix is None:
+            print("Adjacency matrix is not initialized.")
+            return []
+        
+        if start_node < 1 or start_node > self.graph_size:
+            print(f"Start node {start_node} is not in the valid node range.")
+            return []
+        
+        visited = set()
+        bfs_order = []
+        queue = [start_node - 1]
+
+        visited.add(start_node - 1)
+
+        while queue:
+            current_node = queue.pop(0)
+            bfs_order.append(current_node + 1)
+
+            for neighbor in range(self.graph_size):
+                if self.adjacency_matrix[current_node][neighbor] == 1 and neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
+        return bfs_order
