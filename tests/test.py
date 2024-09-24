@@ -22,20 +22,23 @@ def test_bfs_adjacency_matrix(graph: Graph, start_node: int) -> list:
     print(f"BFS Adjacency Matrix from node {start_node}: {result}")
     return result
 
+def test_bfs_distance(graph: Graph, start_node: int, target_node: int) -> int:
+    distance = graph.bfs_shortest_path(start_node, target_node)
+    print(f"Distance between node {start_node} and node {target_node}: {distance}")
+    return distance
+
 graph = Graph()
 
 test_graph_path = os.path.join("data", "test_graph.txt")
 test_info_path = os.path.join("data", "test_graph_info.txt")
 
 graph = test_read(test_graph_path, graph, representation="Adjacency Matrix")
+
 test_info_file(graph, test_info_path)
-
-graph = test_read(test_graph_path, graph, representation="Adjacency List")
 bfs_list_result = test_bfs_adjacency_list(graph, start_node=1)
-
-graph = test_read(test_graph_path, graph, representation="Adjacency Matrix")
 bfs_matrix_result = test_bfs_adjacency_matrix(graph, start_node=1)
+distance_result = test_bfs_distance(graph, start_node=1, target_node=4)
 
-print("\nFinal BFS Results:")
 print(f"BFS Adjacency List Result: {bfs_list_result}")
 print(f"BFS Adjacency Matrix Result: {bfs_matrix_result}")
+print(f"Distance Result: {distance_result}")
