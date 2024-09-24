@@ -33,6 +33,11 @@ def test_diameter(graph: Graph) -> int:
     print(f"Graph Diameter: {diameter}")
     return diameter
 
+def test_approximate_diameter(graph: Graph, sample_size: int) -> int:
+    approximate_diameter = graph.calculate_approximate_diameter(sample_size)
+    print(f"Approximate Diameter (sample size {sample_size}): {approximate_diameter}")
+    return approximate_diameter
+
 def test_connected_components(graph: Graph) -> dict:
     components = graph.find_connected_components()
     print(f"Connected Components: {components}")
@@ -56,6 +61,8 @@ if __name__ == "__main__":
     test_bfs_distance(graph_list, start_node=1, target_node=3)
     test_diameter(graph_list)
     test_connected_components(graph_list)
+    sample_size = 3
+    test_approximate_diameter(graph_list, sample_size)
 
 '''
 test_graph
