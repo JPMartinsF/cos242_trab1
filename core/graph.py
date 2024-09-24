@@ -180,6 +180,29 @@ class Graph:
 
         return bfs_order
 
+    def calculate_diameter(self) -> int:
+        """
+        Calculates the diameter of the graph by iterating through every node. 
+
+        Returns:
+            int: The diameter of the graph.
+        """
+        if not self.adjacency_list:
+            print("Adjacency list is not initialized.")
+            return -1
+
+        diameter = 0
+
+        for node in self.adjacency_list:
+            farthest_distance = -1
+            for target_node in self.adjacency_list:
+                if node != target_node:
+                    distance = self.bfs_shortest_path(node, target_node)
+                    farthest_distance = max(farthest_distance, distance)
+            diameter = max(diameter, farthest_distance)
+
+        return diameter
+    
     def bfs_shortest_path(self, start_node: int, target_node: int) -> int:
         """
         Performs BFS to find the shortest path between two nodes in an unweighted graph.
@@ -215,25 +238,55 @@ class Graph:
         
         return -1
 
-    def calculate_diameter(self) -> int:
+    def find_connected_components(self) -> dict:
         """
-        Calculates the diameter of the graph by iterating through every node. 
+        Finds all connected components in the graph using BFS and returns
+        the number of connected components, their sizes, and the nodes in each component.
+        Components are listed in descending order of size.
 
         Returns:
-            int: The diameter of the graph.
+            dict: A dictionary with component sizes and the list of nodes for each component.
+                Format: {size: [list of nodes], ...}
         """
-        if not self.adjacency_list:
-            print("Adjacency list is not initialized.")
-            return -1
-
-        diameter = 0
+        visited = set()
+        components = []
 
         for node in self.adjacency_list:
-            farthest_distance = -1
-            for target_node in self.adjacency_list:
-                if node != target_node:
-                    distance = self.bfs_shortest_path(node, target_node)
-                    farthest_distance = max(farthest_distance, distance)
-            diameter = max(diameter, farthest_distance)
+            if node not in visited:
+                component = self._bfs_component(node, visited)
+                components.append(component)
 
-        return diameter
+        components.sort(key=len, reverse=True)
+
+        result = {len(component): component for component in components}
+
+        print(f"Number of connected components: {len(components)}")
+        for size, nodes in result.items():
+            print(f"Component of size {size}: {nodes}")
+
+        return result
+    
+    def _bfs_component(self, start_node: int, visited: set) -> list:
+        """
+        Performs BFS to find all nodes in the current connected component.
+        
+        Args:
+            start_node (int): The node from which to start BFS.
+            visited (set): The set of visited nodes.
+        
+        Returns:
+            list: The list of nodes in the connected component.
+        """
+        queue = [start_node]
+        component = []
+        visited.add(start_node)
+
+        while queue:
+            node = queue.pop(0)
+            component.append(node)
+            for neighbor in self.adjacency_list[node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        return component
+    
