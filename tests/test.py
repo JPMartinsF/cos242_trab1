@@ -27,20 +27,27 @@ def test_bfs_distance(graph: Graph, start_node: int, target_node: int) -> int:
     print(f"Distance between node {start_node} and node {target_node}: {distance}")
     return distance
 
+def test_diameter(graph: Graph) -> int:
+    diameter = graph.calculate_diameter()
+    print(f"Graph Diameter: {diameter}")
+    return diameter
+
 graph = Graph()
 
 test_graph_path = os.path.join("data", "test_graph.txt")
 test_info_path = os.path.join("data", "test_graph_info.txt")
 
 graph_matrix = test_read(test_graph_path, graph, representation="Adjacency Matrix")
-test_bfs_adjacency_matrix(graph_matrix, start_node=1)
 test_info_file(graph_matrix, test_info_path)
+test_bfs_adjacency_matrix(graph_matrix, start_node=1)
 
 graph_list = test_read(test_graph_path, graph, representation="Adjacency List")
+test_info_file(graph_list, test_info_path)
 test_bfs_adjacency_list(graph_list, start_node=1)
 test_bfs_distance(graph_list, start_node=1, target_node=5)
 test_bfs_distance(graph_list, start_node=1, target_node=2)
 test_bfs_distance(graph_list, start_node=1, target_node=3)
+test_diameter(graph_list)
 
 '''
 test_graph
