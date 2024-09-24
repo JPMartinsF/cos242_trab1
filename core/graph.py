@@ -186,3 +186,38 @@ class Graph:
                     queue.append(neighbor)
 
         return bfs_order
+
+    def bfs_shortest_path(self, start_node: int, target_node: int) -> int:
+        """
+        Performs BFS to find the shortest path between two nodes in an unweighted graph.
+
+        Args:
+            start_node (int): The node from which to start BFS.
+            target_node (int): The node to find the shortest path to.
+
+        Returns:
+            int: The shortest path distance, or -1 if the target is not reachable.
+        """
+        if not self.adjacency_list:
+            print("Adjacency list is not initialized.")
+            return -1
+
+        if start_node == target_node:
+            return 0
+        
+        visited = set()
+        queue = [(start_node, 0)]
+        
+        visited.add(start_node)
+        
+        while queue:
+            current_node, distance = queue.pop(0)
+            
+            for neighbor in self.adjacency_list[current_node]:
+                if neighbor == target_node:
+                    return distance + 1
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append((neighbor, distance + 1))
+        
+        return -1
