@@ -21,7 +21,7 @@ class Graph:
         self.min_degree = None
         self.max_degree = None
         self.adjacency_matrix = None
-        self.adjacency_list = {}
+        self.adjacency_list = None
 
     def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
         """
@@ -35,11 +35,11 @@ class Graph:
             with open(file_name, "r", encoding="utf-8") as file:
                 self.graph_size = int(file.readline().strip())
                 self.graph_links = []
-                
+
                 if representation == "Adjacency Matrix":
-                    self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
+                    self.adjacency_matrix = self._initialize_adjacency_matrix()
                 elif representation == "Adjacency List":
-                    self.adjacency_list = {i: [] for i in range(1, self.graph_size + 1)}
+                    self.adjacency_list = self._initialize_adjacency_list()
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
@@ -52,12 +52,10 @@ class Graph:
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
                         
-                        if representation == "Adjacency Matrix":
-                            self.adjacency_matrix[u_node - 1][v_node - 1] = 1
-                            self.adjacency_matrix[v_node - 1][u_node - 1] = 1
-                        elif representation == "Adjacency List":
-                            self.adjacency_list[u_node].append(v_node)
-                            self.adjacency_list[v_node].append(u_node)
+                        if self.adjacency_matrix is not None:
+                            self._add_edge_to_matrix(u_node, v_node)
+                        elif self.adjacency_list is not None:
+                            self._add_edge_to_list(u_node, v_node)
                     else:
                         print(f"Invalid node data: {line.strip()}")
                 
@@ -65,6 +63,24 @@ class Graph:
 
         except FileNotFoundError:
             print(f"File '{file_name}' not found.")
+
+    def _initialize_adjacency_matrix(self):
+        """Initializes an adjacency matrix for the graph."""
+        return np.zeros((self.graph_size, self.graph_size), dtype=int)
+
+    def _initialize_adjacency_list(self):
+        """Initializes an adjacency list for the graph."""
+        return {i: [] for i in range(1, self.graph_size + 1)}
+
+    def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
+        """Adds an edge to the adjacency matrix."""
+        self.adjacency_matrix[u_node - 1][v_node - 1] = 1
+        self.adjacency_matrix[v_node - 1][u_node - 1] = 1
+
+    def _add_edge_to_list(self, u_node: int, v_node: int) -> None:
+        """Adds an edge to the adjacency list."""
+        self.adjacency_list[u_node].append(v_node)
+        self.adjacency_list[v_node].append(u_node)
 
     def _calculate_node_metrics(self) -> None:
         """
@@ -92,7 +108,7 @@ class Graph:
             file.write(f"Mean Degree: {self.mean_grade}\n")
             file.write(f"Median Degree: {self.median_grade}\n")
 
-    def bfs(self, start_node: int, representation: str = "Adjacency List") -> list:
+    def bfs(self, start_node: int) -> list:
         """
         Chooses the appropriate BFS method based on the representation type.
 
@@ -103,13 +119,12 @@ class Graph:
         Returns:
             list: A list of nodes in the order they are visited.
         """
-        if representation == "Adjacency List":
+        if self.adjacency_list is not None:
             return self.bfs_adjacency_list(start_node)
-        elif representation == "Adjacency Matrix":
+        elif self.adjacency_matrix is not None:
             return self.bfs_adjacency_matrix(start_node)
         else:
-            print(f"Unsupported representation: {representation}")
-            return []
+            raise ValueError("Graph representation is not initialized.")
 
     def bfs_adjacency_list(self, start_node: int) -> list:
         """
@@ -121,10 +136,6 @@ class Graph:
         Returns:
             list: A list of nodes in the order they are visited.
         """
-        if not self.adjacency_list:
-            print("Adjacency list is not initialized.")
-            return []
-
         if start_node not in self.adjacency_list:
             print(f"Start node {start_node} is not in the graph.")
             return []
@@ -156,10 +167,6 @@ class Graph:
         Returns:
             list: A list of nodes in the order they are visited.
         """
-        if self.adjacency_matrix is None:
-            print("Adjacency matrix is not initialized.")
-            return []
-        
         if start_node < 1 or start_node > self.graph_size:
             print(f"Start node {start_node} is not in the valid node range.")
             return []
@@ -188,7 +195,7 @@ class Graph:
         Returns:
             int: The diameter of the graph.
         """
-        if not self.adjacency_list:
+        if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
 
@@ -215,10 +222,6 @@ class Graph:
         Returns:
             int: The shortest path distance, or -1 if the target is not reachable.
         """
-        if not self.adjacency_list:
-            print("Adjacency list is not initialized.")
-            return -1
-
         if start_node == target_node:
             return 0
         
@@ -249,50 +252,21 @@ class Graph:
         Returns:
             int: The estimated diameter of the graph.
         """
-        if not self.adjacency_list:
+        if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
 
         nodes = list(self.adjacency_list.keys())
         sample = random.sample(nodes, min(sample_size, len(nodes)))
-
-        max_diameter = 0
-
-        for node in sample:
-            farthest_node, distance = self._bfs_farthest_node(node)
-            max_diameter = max(max_diameter, distance)
-
-        return max_diameter
-
-    def _bfs_farthest_node(self, start_node: int) -> tuple:
-        """
-        Helper method to perform BFS and find the farthest node from the start node.
-
-        Args:
-            start_node (int): The node from which to start BFS.
-
-        Returns:
-            tuple: The farthest node and the distance to that node.
-        """
-        visited = set()
-        queue = [(start_node, 0)]
-        visited.add(start_node)
-        farthest_node = start_node
         max_distance = 0
 
-        while queue:
-            current_node, distance = queue.pop(0)
+        for node in sample:
+            for target in sample:
+                if node != target:
+                    distance = self.bfs_shortest_path(node, target)
+                    max_distance = max(max_distance, distance)
 
-            if distance > max_distance:
-                max_distance = distance
-                farthest_node = current_node
-
-            for neighbor in self.adjacency_list[current_node]:
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, distance + 1))
-
-        return farthest_node, max_distance
+        return max_distance
 
     def find_connected_components(self) -> dict:
         """
