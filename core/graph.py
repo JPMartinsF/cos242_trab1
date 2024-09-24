@@ -1,5 +1,6 @@
 import statistics
 import numpy as np
+import random
 
 class Graph:
     """
@@ -237,6 +238,61 @@ class Graph:
                     queue.append((neighbor, distance + 1))
         
         return -1
+
+    def calculate_approximate_diameter(self, sample_size: int) -> int:
+        """
+        Estimates the diameter of the graph using a sampling method.
+
+        Args:
+            sample_size (int): The number of nodes to sample for diameter estimation.
+
+        Returns:
+            int: The estimated diameter of the graph.
+        """
+        if not self.adjacency_list:
+            print("Adjacency list is not initialized.")
+            return -1
+
+        nodes = list(self.adjacency_list.keys())
+        sample = random.sample(nodes, min(sample_size, len(nodes)))
+
+        max_diameter = 0
+
+        for node in sample:
+            farthest_node, distance = self._bfs_farthest_node(node)
+            max_diameter = max(max_diameter, distance)
+
+        return max_diameter
+
+    def _bfs_farthest_node(self, start_node: int) -> tuple:
+        """
+        Helper method to perform BFS and find the farthest node from the start node.
+
+        Args:
+            start_node (int): The node from which to start BFS.
+
+        Returns:
+            tuple: The farthest node and the distance to that node.
+        """
+        visited = set()
+        queue = [(start_node, 0)]
+        visited.add(start_node)
+        farthest_node = start_node
+        max_distance = 0
+
+        while queue:
+            current_node, distance = queue.pop(0)
+
+            if distance > max_distance:
+                max_distance = distance
+                farthest_node = current_node
+
+            for neighbor in self.adjacency_list[current_node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append((neighbor, distance + 1))
+
+        return farthest_node, max_distance
 
     def find_connected_components(self) -> dict:
         """
