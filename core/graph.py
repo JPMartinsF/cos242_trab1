@@ -2,22 +2,21 @@ import statistics
 import numpy as np
 import random
 
+
 class Graph:
     """
     Represents a graph that can be initialized from a source file
     and supports adjacency matrix and adjacency list representations.
     Also calculates node degrees, mean, median, and saves graph info to a file.
     """
-    
+
     def __init__(self) -> None:
-        """
-        Initializes the graph with default attributes.
-        """
+        """Initializes the graph with default attributes."""
         self.graph_size = 0
         self.graph_links = []
         self.node_degrees = {}
-        self.mean_grade = 0
-        self.median_grade = 0
+        self.mean_grade = 0.0
+        self.median_grade = 0.0
         self.min_degree = None
         self.max_degree = None
         self.adjacency_matrix = None
@@ -28,8 +27,8 @@ class Graph:
         Initializes the graph from a text file.
 
         Args:
-            file_name (str): Name of the file containing the graph edges.
-            representation (str): Graph representation type ('Adjacency Matrix' or 'Adjacency List').
+            file_name (str): The name of the file to read the graph from.
+            representation (str): The representation to use ('Adjacency Matrix' or 'Adjacency List').
         """
         try:
             with open(file_name, "r", encoding="utf-8") as file:
@@ -44,23 +43,22 @@ class Graph:
                     raise ValueError(f"Unsupported representation: {representation}")
 
                 for line in file.readlines():
-                    link_data = list(map(int, line.split())) 
+                    link_data = list(map(int, line.split()))
                     if len(link_data) == 2:
                         u_node, v_node = link_data
                         self.graph_links.append((u_node, v_node))
-                        
+
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
-                        
+
                         if self.adjacency_matrix is not None:
                             self._add_edge_to_matrix(u_node, v_node)
                         elif self.adjacency_list is not None:
                             self._add_edge_to_list(u_node, v_node)
                     else:
                         print(f"Invalid node data: {line.strip()}")
-                
-                self._calculate_node_metrics()
 
+                self._calculate_node_metrics()
         except FileNotFoundError:
             print(f"File '{file_name}' not found.")
 
@@ -83,9 +81,7 @@ class Graph:
         self.adjacency_list[v_node].append(u_node)
 
     def _calculate_node_metrics(self) -> None:
-        """
-        Calculates the min, max, mean, and median degrees of the graph's nodes.
-        """
+        """Calculates the min, max, mean, and median degrees of the graph's nodes."""
         if self.node_degrees:
             degrees = list(self.node_degrees.values())
             self.min_degree = min(degrees)
@@ -94,8 +90,7 @@ class Graph:
             self.median_grade = statistics.median(degrees)
 
     def write_info_file(self, filename: str) -> None:
-        """
-        Writes the graph's statistical information to a file.
+        """Writes the graph's statistical information to a file.
 
         Args:
             filename (str): The file to save the graph information.
@@ -109,13 +104,11 @@ class Graph:
             file.write(f"Median Degree: {self.median_grade}\n")
 
     def bfs(self, start_node: int) -> list:
-        """
-        Chooses the appropriate BFS method based on the representation type.
+        """Chooses the appropriate BFS method based on the representation type.
 
         Args:
             start_node (int): The node from which to start BFS.
-            representation (str): The representation to use ('Adjacency Matrix' or 'Adjacency List').
-        
+
         Returns:
             list: A list of nodes in the order they are visited.
         """
@@ -127,19 +120,18 @@ class Graph:
             raise ValueError("Graph representation is not initialized.")
 
     def bfs_adjacency_list(self, start_node: int) -> list:
-        """
-        Performs BFS using the adjacency list representation.
+        """Performs BFS on the adjacency list representation of the graph.
 
         Args:
-            start_node (int): The node from which to start BFS.
-        
+            start_node (int): The starting node for BFS.
+
         Returns:
             list: A list of nodes in the order they are visited.
         """
         if start_node not in self.adjacency_list:
             print(f"Start node {start_node} is not in the graph.")
             return []
-        
+
         visited = set()
         bfs_order = []
         queue = [start_node]
@@ -147,7 +139,8 @@ class Graph:
         visited.add(start_node)
 
         while queue:
-            current_node = queue.pop(0)
+            current_node = queue[0]
+            queue = queue[1:]
             bfs_order.append(current_node)
 
             for neighbor in self.adjacency_list[current_node]:
@@ -158,19 +151,18 @@ class Graph:
         return bfs_order
 
     def bfs_adjacency_matrix(self, start_node: int) -> list:
-        """
-        Performs BFS using the adjacency matrix representation.
+        """Performs BFS on the adjacency matrix representation of the graph.
 
         Args:
-            start_node (int): The node from which to start BFS.
-        
+            start_node (int): The starting node for BFS.
+
         Returns:
             list: A list of nodes in the order they are visited.
         """
         if start_node < 1 or start_node > self.graph_size:
             print(f"Start node {start_node} is not in the valid node range.")
             return []
-        
+
         visited = set()
         bfs_order = []
         queue = [start_node - 1]
@@ -178,7 +170,8 @@ class Graph:
         visited.add(start_node - 1)
 
         while queue:
-            current_node = queue.pop(0)
+            current_node = queue[0]
+            queue = queue[1:]
             bfs_order.append(current_node + 1)
 
             for neighbor in range(self.graph_size):
@@ -189,8 +182,7 @@ class Graph:
         return bfs_order
 
     def calculate_diameter(self) -> int:
-        """
-        Calculates the diameter of the graph by iterating through every node. 
+        """Calculates the diameter of the graph.
 
         Returns:
             int: The diameter of the graph.
@@ -210,10 +202,9 @@ class Graph:
             diameter = max(diameter, farthest_distance)
 
         return diameter
-    
+
     def bfs_shortest_path(self, start_node: int, target_node: int) -> int:
-        """
-        Performs BFS to find the shortest path between two nodes in an unweighted graph.
+        """Finds the shortest path between two nodes in an unweighted graph.
 
         Args:
             start_node (int): The node from which to start BFS.
@@ -224,27 +215,27 @@ class Graph:
         """
         if start_node == target_node:
             return 0
-        
+
         visited = set()
         queue = [(start_node, 0)]
-        
+
         visited.add(start_node)
-        
+
         while queue:
-            current_node, distance = queue.pop(0)
-            
+            current_node, distance = queue[0]
+            queue = queue[1:]
+
             for neighbor in self.adjacency_list[current_node]:
                 if neighbor == target_node:
                     return distance + 1
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append((neighbor, distance + 1))
-        
+
         return -1
 
     def calculate_approximate_diameter(self, sample_size: int) -> int:
-        """
-        Estimates the diameter of the graph using a sampling method.
+        """Estimates the diameter of the graph using a sampling method.
 
         Args:
             sample_size (int): The number of nodes to sample for diameter estimation.
@@ -269,14 +260,13 @@ class Graph:
         return max_distance
 
     def find_connected_components(self) -> dict:
-        """
-        Finds all connected components in the graph using BFS and returns
+        """Finds all connected components in the graph and returns
         the number of connected components, their sizes, and the nodes in each component.
         Components are listed in descending order of size.
 
         Returns:
             dict: A dictionary with component sizes and the list of nodes for each component.
-                Format: {size: [list of nodes], ...}
+                  Format: {size: [list of nodes], ...}
         """
         visited = set()
         components = []
@@ -295,15 +285,14 @@ class Graph:
             print(f"Component of size {size}: {nodes}")
 
         return result
-    
+
     def _bfs_component(self, start_node: int, visited: set) -> list:
-        """
-        Performs BFS to find all nodes in the current connected component.
-        
+        """Finds all nodes in the current connected component.
+
         Args:
             start_node (int): The node from which to start BFS.
             visited (set): The set of visited nodes.
-        
+
         Returns:
             list: The list of nodes in the connected component.
         """
@@ -312,11 +301,13 @@ class Graph:
         visited.add(start_node)
 
         while queue:
-            node = queue.pop(0)
+            node = queue[0]
+            queue = queue[1:]
             component.append(node)
+
             for neighbor in self.adjacency_list[node]:
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append(neighbor)
+
         return component
-    
