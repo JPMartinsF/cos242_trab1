@@ -32,22 +32,27 @@ def test_diameter(graph: Graph) -> int:
     print(f"Graph Diameter: {diameter}")
     return diameter
 
+def test_connected_components(graph: Graph) -> dict:
+    components = graph.find_connected_components()
+    return components
+
 graph = Graph()
 
-test_graph_path = os.path.join("data", "test_graph.txt")
-test_info_path = os.path.join("data", "test_graph_info.txt")
+test_graph_path = os.path.join("data", "grafo_1.txt")
+test_info_path = os.path.join("data", "grafo_1_info.txt")
 
-graph_matrix = test_read(test_graph_path, graph, representation="Adjacency Matrix")
-test_info_file(graph_matrix, test_info_path)
-test_bfs_adjacency_matrix(graph_matrix, start_node=1)
+# graph_matrix = test_read(test_graph_path, graph, representation="Adjacency Matrix")
+# test_info_file(graph_matrix, test_info_path)
+# test_bfs_adjacency_matrix(graph_matrix, start_node=1)
 
 graph_list = test_read(test_graph_path, graph, representation="Adjacency List")
-test_info_file(graph_list, test_info_path)
-test_bfs_adjacency_list(graph_list, start_node=1)
-test_bfs_distance(graph_list, start_node=1, target_node=5)
-test_bfs_distance(graph_list, start_node=1, target_node=2)
-test_bfs_distance(graph_list, start_node=1, target_node=3)
-test_diameter(graph_list)
+# test_info_file(graph_list, test_info_path)
+# test_bfs_adjacency_list(graph_list, start_node=1)
+# test_bfs_distance(graph_list, start_node=1, target_node=5)
+# test_bfs_distance(graph_list, start_node=1, target_node=2)
+# test_bfs_distance(graph_list, start_node=1, target_node=3)
+# test_diameter(graph_list)
+components = test_connected_components(graph_list)
 
 '''
 test_graph
