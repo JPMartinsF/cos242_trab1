@@ -2,7 +2,6 @@ import statistics
 import numpy as np
 import random
 
-
 class Graph:
     """
     Represents a graph that can be initialized from a source file
