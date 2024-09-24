@@ -35,7 +35,6 @@ class Graph:
                 self.graph_size = int(file.readline().strip())
                 self.graph_links = []
                 
-                # Initialize graph representation
                 if representation == "Adjacency Matrix":
                     self.adjacency_matrix = np.zeros((self.graph_size, self.graph_size), dtype=int)
                 elif representation == "Adjacency List":
@@ -43,18 +42,15 @@ class Graph:
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
-                # Process edges from file
                 for line in file.readlines():
                     link_data = list(map(int, line.split())) 
                     if len(link_data) == 2:
                         u_node, v_node = link_data
                         self.graph_links.append((u_node, v_node))
                         
-                        # Update node degrees
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
                         
-                        # Update adjacency matrix or list
                         if representation == "Adjacency Matrix":
                             self.adjacency_matrix[u_node - 1][v_node - 1] = 1
                             self.adjacency_matrix[v_node - 1][u_node - 1] = 1
@@ -62,15 +58,12 @@ class Graph:
                             self.adjacency_list[u_node].append(v_node)
                             self.adjacency_list[v_node].append(u_node)
                     else:
-                        print(f"Invalid link data: {line.strip()}")
+                        print(f"Invalid node data: {line.strip()}")
                 
-                # Calculate node degree metrics
                 self._calculate_node_metrics()
 
         except FileNotFoundError:
             print(f"File '{file_name}' not found.")
-        except ValueError as e:
-            print(f"Error: {e}")
 
     def _calculate_node_metrics(self) -> None:
         """
@@ -221,3 +214,26 @@ class Graph:
                     queue.append((neighbor, distance + 1))
         
         return -1
+
+    def calculate_diameter(self) -> int:
+        """
+        Calculates the diameter of the graph by iterating through every node. 
+
+        Returns:
+            int: The diameter of the graph.
+        """
+        if not self.adjacency_list:
+            print("Adjacency list is not initialized.")
+            return -1
+
+        diameter = 0
+
+        for node in self.adjacency_list:
+            farthest_distance = -1
+            for target_node in self.adjacency_list:
+                if node != target_node:
+                    distance = self.bfs_shortest_path(node, target_node)
+                    farthest_distance = max(farthest_distance, distance)
+            diameter = max(diameter, farthest_distance)
+
+        return diameter
