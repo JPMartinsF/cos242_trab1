@@ -32,13 +32,21 @@ graph = Graph()
 test_graph_path = os.path.join("data", "test_graph.txt")
 test_info_path = os.path.join("data", "test_graph_info.txt")
 
-graph = test_read(test_graph_path, graph, representation="Adjacency Matrix")
+graph_matrix = test_read(test_graph_path, graph, representation="Adjacency Matrix")
+test_bfs_adjacency_matrix(graph_matrix, start_node=1)
+test_info_file(graph_matrix, test_info_path)
 
-test_info_file(graph, test_info_path)
-bfs_list_result = test_bfs_adjacency_list(graph, start_node=1)
-bfs_matrix_result = test_bfs_adjacency_matrix(graph, start_node=1)
-distance_result = test_bfs_distance(graph, start_node=1, target_node=4)
+graph_list = test_read(test_graph_path, graph, representation="Adjacency List")
+test_bfs_adjacency_list(graph_list, start_node=1)
+test_bfs_distance(graph_list, start_node=1, target_node=5)
+test_bfs_distance(graph_list, start_node=1, target_node=2)
+test_bfs_distance(graph_list, start_node=1, target_node=3)
 
-print(f"BFS Adjacency List Result: {bfs_list_result}")
-print(f"BFS Adjacency Matrix Result: {bfs_matrix_result}")
-print(f"Distance Result: {distance_result}")
+'''
+test_graph
+1_2
+|/
+5
+|\
+4 3
+'''
