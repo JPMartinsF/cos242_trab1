@@ -180,6 +180,74 @@ class Graph:
 
         return bfs_order
 
+    def dfs(self, start_node: int) -> list:
+        """
+        Performs DFS based on the graph representation (Adjacency List or Matrix).
+
+        Args:
+            start_node (int): The node from which to start DFS.
+
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        if self.adjacency_list is not None:
+            return self.dfs_adjacency_list(start_node)
+        elif self.adjacency_matrix is not None:
+            return self.dfs_adjacency_matrix(start_node)
+        else:
+            raise ValueError("Graph representation is not initialized.")
+
+    def dfs_adjacency_list(self, start_node: int) -> list:
+        """
+        Performs an iterative DFS on the adjacency list representation of the graph.
+
+        Args:
+            start_node (int): The starting node for DFS.
+
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        visited = set()
+        dfs_order = []
+        stack = [start_node]
+
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                dfs_order.append(node)
+                for neighbor in self.adjacency_list[node]:
+                    if neighbor not in visited:
+                        stack.append(neighbor)
+
+        return dfs_order
+
+    def dfs_adjacency_matrix(self, start_node: int) -> list:
+        """
+        Performs an iterative DFS on the adjacency matrix representation of the graph.
+
+        Args:
+            start_node (int): The starting node for DFS.
+
+        Returns:
+            list: A list of nodes in the order they are visited.
+        """
+        visited = set()
+        dfs_order = []
+        stack = [start_node - 1]
+
+        while stack:
+            node = stack.pop()
+            if node not in visited:
+                visited.add(node)
+                dfs_order.append(node + 1)
+
+                for neighbor in range(self.graph_size - 1, -1, -1):
+                    if self.adjacency_matrix[node][neighbor] == 1 and neighbor not in visited:
+                        stack.append(neighbor)
+
+        return dfs_order
+
     def calculate_diameter(self) -> int:
         """Calculates the diameter of the graph.
 

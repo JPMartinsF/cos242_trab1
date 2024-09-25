@@ -43,6 +43,18 @@ def test_connected_components(graph: Graph) -> dict:
     print(f"Connected Components: {components}")
     return components
 
+def test_dfs_adjacency_list(graph: Graph, start_node: int) -> list:
+    """Test DFS using adjacency list."""
+    result = graph.dfs_adjacency_list(start_node)
+    print(f"DFS Adjacency List from node {start_node}: {result}")
+    return result
+
+def test_dfs_adjacency_matrix(graph: Graph, start_node: int) -> list:
+    """Test DFS using adjacency matrix."""
+    result = graph.dfs_adjacency_matrix(start_node)
+    print(f"DFS Adjacency Matrix from node {start_node}: {result}")
+    return result
+
 if __name__ == "__main__":
     test_graph_path = os.path.join("data", "test_graph.txt")
     test_info_path = os.path.join("data", "test_graph_info.txt")
@@ -51,11 +63,13 @@ if __name__ == "__main__":
     graph_matrix = test_read(test_graph_path, representation="Adjacency Matrix")
     test_info_file(graph_matrix, test_info_path)
     test_bfs_adjacency_matrix(graph_matrix, start_node=1)
+    test_dfs_adjacency_matrix(graph_matrix, start_node=1)
 
     print("\n--- Adjacency List ---")
     graph_list = test_read(test_graph_path, representation="Adjacency List")
     test_info_file(graph_list, test_info_path)
     test_bfs_adjacency_list(graph_list, start_node=1)
+    test_dfs_adjacency_list(graph_list, start_node=1)
     test_bfs_distance(graph_list, start_node=1, target_node=5)
     test_bfs_distance(graph_list, start_node=1, target_node=2)
     test_bfs_distance(graph_list, start_node=1, target_node=3)
