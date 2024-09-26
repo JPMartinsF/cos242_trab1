@@ -63,7 +63,7 @@ class Graph:
 
     def _initialize_adjacency_matrix(self):
         """Initializes an adjacency matrix for the graph."""
-        return np.zeros((self.graph_size, self.graph_size), dtype=int)
+        return np.zeros((self.graph_size, self.graph_size), dtype=bool)
 
     def _initialize_adjacency_list(self):
         """Initializes an adjacency list for the graph."""
@@ -132,6 +132,7 @@ class Graph:
             return []
 
         visited = set()
+        parents = {start_node: None}
         bfs_order = []
         queue = [start_node]
 
@@ -146,8 +147,9 @@ class Graph:
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append(neighbor)
+                    parents[neighbor] = current_node
 
-        return bfs_order
+        return (bfs_order, parents)
 
     def bfs_adjacency_matrix(self, start_node: int) -> list:
         """Performs BFS on the adjacency matrix representation of the graph.
@@ -208,6 +210,7 @@ class Graph:
             list: A list of nodes in the order they are visited.
         """
         visited = set()
+        parents = {start_node: None}
         dfs_order = []
         stack = [start_node]
 
@@ -219,8 +222,9 @@ class Graph:
                 for neighbor in self.adjacency_list[node]:
                     if neighbor not in visited:
                         stack.append(neighbor)
+                        parents[neighbor] = node
 
-        return dfs_order
+        return (dfs_order, parents)
 
     def dfs_adjacency_matrix(self, start_node: int) -> list:
         """
@@ -347,9 +351,9 @@ class Graph:
 
         result = {len(component): component for component in components}
 
-        print(f"Number of connected components: {len(components)}")
-        for size, nodes in result.items():
-            print(f"Component of size {size}: {nodes}")
+        # print(f"Number of connected components: {len(components)}")
+        # for size, nodes in result.items():
+        #     print(f"Component of size {size}: {nodes}")
 
         return result
 
