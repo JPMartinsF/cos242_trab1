@@ -1,4 +1,3 @@
-data/grafo*
-data/test_graph_info.txt
+data/*
 core/__pycache__
 Pip*
