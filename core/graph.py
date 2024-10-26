@@ -11,16 +11,16 @@ class Graph:
 
     def __init__(self) -> None:
         """Initializes the graph with default attributes."""
-        self.graph_size = 0
-        self.graph_links = []
-        self.node_degrees = {}
-        self.mean_grade = 0.0
-        self.median_grade = 0.0
-        self.min_degree = None
-        self.max_degree = None
-        self.adjacency_matrix = None
-        self.adjacency_list = None
-        self.is_weighted = False
+        self.graph_size: int = 0
+        self.graph_links: list = []
+        self.node_degrees: dict = {}
+        self.mean_grade: float = 0.0
+        self.median_grade: int = 0
+        self.min_degree: int = None
+        self.max_degree: int = None
+        self.adjacency_matrix: list[list] = None
+        self.adjacency_list: list[list] = None
+        self.is_weighted: bool = False
 
     def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
         """
@@ -44,7 +44,19 @@ class Graph:
 
                 for line in file.readlines():
                     link_data = line.split()
+                    if len(link_data) == 2:
+                        u_node, v_node = int(link_data[0]), int(link_data[1])
+                        self.graph_links.append((u_node, v_node))
+
+                        self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
+                        self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
+
+                        if self.adjacency_matrix is not None:
+                            self._add_link_to_matrix(u_node, v_node)
+                        elif self.adjacency_list is not None:
+                            self._add_link_to_list(u_node, v_node)
                     if len(link_data) == 3:
+                        self.is_weighted = True
                         u_node, v_node, link_weigth = int(link_data[0]), int(link_data[1]), float(link_data[2])
                         self.graph_links.append((u_node, v_node))
 
@@ -52,9 +64,9 @@ class Graph:
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
 
                         if self.adjacency_matrix is not None:
-                            self._add_link_to_matrix(u_node, v_node, link_weigth)
+                            self._add_weighted_link_to_matrix(u_node, v_node, link_weigth)
                         elif self.adjacency_list is not None:
-                            self._add_link_to_list(u_node, v_node, link_weigth)
+                            self._add_weighted_link_to_list(u_node, v_node, link_weigth)
                     else:
                         print(f"Invalid node data: {line.strip()}")
 
@@ -72,13 +84,23 @@ class Graph:
         """Initializes an adjacency list for the graph."""
         return {i: {} for i in range(1, self.graph_size + 1)}
 
-    def _add_link_to_matrix(self, u_node: int, v_node: int, link_weigth: float) -> None:
-        """Adds an link to the adjacency matrix."""
+    def _add_link_to_matrix(self, u_node: int, v_node: int) -> None:
+        """Adds a link to the adjacency matrix."""
+        self.adjacency_matrix[u_node - 1][v_node - 1] = 1
+        self.adjacency_matrix[v_node - 1][u_node - 1] = 1
+
+    def _add_link_to_list(self, u_node: int, v_node: int) -> None:
+        """Adds a link to the adjacency list."""
+        self.adjacency_list[u_node].append(v_node)
+        self.adjacency_list[v_node].append(u_node)
+
+    def _add_weighted_link_to_matrix(self, u_node: int, v_node: int, link_weigth: float) -> None:
+        """Adds a weighted link to the adjacency matrix."""
         self.adjacency_matrix[u_node - 1][v_node - 1] = link_weigth
         self.adjacency_matrix[v_node - 1][u_node - 1] = link_weigth
 
-    def _add_link_to_list(self, u_node: int, v_node: int, link_weigth: float) -> None:
-        """Adds an link to the adjacency list."""
+    def _add_weighted_link_to_list(self, u_node: int, v_node: int, link_weigth: float) -> None:
+        """Adds a weighted link to the adjacency list."""
         self.adjacency_list[u_node][v_node] = link_weigth
         self.adjacency_list[v_node][u_node] = link_weigth
 
@@ -179,9 +201,10 @@ class Graph:
             bfs_order.append(current_node + 1)
 
             for neighbor in range(self.graph_size):
-                if self.adjacency_matrix[current_node][neighbor] == 1 and neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
+                if neighbor not in visited:
+                    if self.adjacency_matrix[current_node][neighbor] == 1:
+                        visited.add(neighbor)
+                        queue.append(neighbor)
 
         return bfs_order
 
@@ -250,8 +273,9 @@ class Graph:
                 dfs_order.append(node + 1)
 
                 for neighbor in range(self.graph_size - 1, -1, -1):
-                    if self.adjacency_matrix[node][neighbor] == 1 and neighbor not in visited:
-                        stack.append(neighbor)
+                    if neighbor not in visited:
+                        if self.adjacency_matrix[node][neighbor] == 1:
+                            stack.append(neighbor)
 
         return dfs_order
 

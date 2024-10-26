@@ -79,15 +79,15 @@ if __name__ == "__main__":
     sample_size = 3
     test_approximate_diameter(graph_list, sample_size)
 
-    graph_file_number = "5"
+    # graph_file_number = "5"
 
-    graph_path = os.path.join("data", f"grafo_{graph_file_number}.txt")
-    info_path = os.path.join("data", f"grafo_{graph_file_number}_info.txt")
+    # graph_path = os.path.join("data", f"grafo_{graph_file_number}.txt")
+    # info_path = os.path.join("data", f"grafo_{graph_file_number}_info.txt")
 
-    graph = test_read(graph_path, representation="Adjacency List")
-    test_info_file(graph, info_path)
+    # graph = test_read(graph_path, representation="Adjacency List")
+    # test_info_file(graph, info_path)
 
-    print(graph.calculate_approximate_diameter(3))
+    # print(graph.calculate_approximate_diameter(3))
 
     # print(list(aux.keys()))
     # print("LEN", len(aux))
