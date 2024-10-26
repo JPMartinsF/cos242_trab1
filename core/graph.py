@@ -20,6 +20,7 @@ class Graph:
         self.max_degree = None
         self.adjacency_matrix = None
         self.adjacency_list = None
+        self.is_weighted = False
 
     def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
         """
@@ -42,18 +43,18 @@ class Graph:
                     raise ValueError(f"Unsupported representation: {representation}")
 
                 for line in file.readlines():
-                    link_data = list(map(int, line.split()))
-                    if len(link_data) == 2:
-                        u_node, v_node = link_data
+                    link_data = line.split()
+                    if len(link_data) == 3:
+                        u_node, v_node, link_weigth = int(link_data[0]), int(link_data[1]), float(link_data[2])
                         self.graph_links.append((u_node, v_node))
 
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
 
                         if self.adjacency_matrix is not None:
-                            self._add_edge_to_matrix(u_node, v_node)
+                            self._add_link_to_matrix(u_node, v_node, link_weigth)
                         elif self.adjacency_list is not None:
-                            self._add_edge_to_list(u_node, v_node)
+                            self._add_link_to_list(u_node, v_node, link_weigth)
                     else:
                         print(f"Invalid node data: {line.strip()}")
 
@@ -63,21 +64,23 @@ class Graph:
 
     def _initialize_adjacency_matrix(self):
         """Initializes an adjacency matrix for the graph."""
-        return np.zeros((self.graph_size, self.graph_size), dtype=bool)
+        matrix = np.full((self.graph_size, self.graph_size), np.inf)
+        np.fill_diagonal(matrix, 0)
+        return matrix
 
     def _initialize_adjacency_list(self):
         """Initializes an adjacency list for the graph."""
-        return {i: [] for i in range(1, self.graph_size + 1)}
+        return {i: {} for i in range(1, self.graph_size + 1)}
 
-    def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
-        """Adds an edge to the adjacency matrix."""
-        self.adjacency_matrix[u_node - 1][v_node - 1] = 1
-        self.adjacency_matrix[v_node - 1][u_node - 1] = 1
+    def _add_link_to_matrix(self, u_node: int, v_node: int, link_weigth: float) -> None:
+        """Adds an link to the adjacency matrix."""
+        self.adjacency_matrix[u_node - 1][v_node - 1] = link_weigth
+        self.adjacency_matrix[v_node - 1][u_node - 1] = link_weigth
 
-    def _add_edge_to_list(self, u_node: int, v_node: int) -> None:
-        """Adds an edge to the adjacency list."""
-        self.adjacency_list[u_node].append(v_node)
-        self.adjacency_list[v_node].append(u_node)
+    def _add_link_to_list(self, u_node: int, v_node: int, link_weigth: float) -> None:
+        """Adds an link to the adjacency list."""
+        self.adjacency_list[u_node][v_node] = link_weigth
+        self.adjacency_list[v_node][u_node] = link_weigth
 
     def _calculate_node_metrics(self) -> None:
         """Calculates the min, max, mean, and median degrees of the graph's nodes."""
@@ -96,7 +99,7 @@ class Graph:
         """
         with open(filename, "w", encoding="utf-8") as file:
             file.write(f"Graph Size: {self.graph_size}\n")
-            file.write(f"Number of Edges: {len(self.graph_links)}\n")
+            file.write(f"Number of links: {len(self.graph_links)}\n")
             file.write(f"Min Degree: {self.min_degree}\n")
             file.write(f"Max Degree: {self.max_degree}\n")
             file.write(f"Mean Degree: {self.mean_grade}\n")
