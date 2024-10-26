@@ -22,7 +22,7 @@ class Graph:
         self.adjacency_list: list[list] = None
         self.is_weighted: bool = False
 
-    def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
+    def initialize_graph_from_txt(self, file_name: str, representation: str, weighted: bool) -> None:
         """
         Initializes the graph from a text file.
 
@@ -38,7 +38,10 @@ class Graph:
                 if representation == "Adjacency Matrix":
                     self.adjacency_matrix = self._initialize_adjacency_matrix()
                 elif representation == "Adjacency List":
-                    self.adjacency_list = self._initialize_adjacency_list()
+                    if weighted:
+                        self.adjacency_list = self._initialize_weighted_adjacency_list()
+                    else:
+                        self.adjacency_list = self._initialize_adjacency_list()
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
@@ -81,6 +84,10 @@ class Graph:
         return matrix
 
     def _initialize_adjacency_list(self):
+        """Initializes an adjacency list for the graph."""
+        return {i: [] for i in range(1, self.graph_size + 1)}
+
+    def _initialize_weighted_adjacency_list(self):
         """Initializes an adjacency list for the graph."""
         return {i: {} for i in range(1, self.graph_size + 1)}
 
