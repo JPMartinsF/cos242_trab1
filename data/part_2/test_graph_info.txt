@@ -1,0 +1,6 @@
+Graph Size: 5
+Number of edges: 6
+Min Degree: 2
+Max Degree: 4
+Mean Degree: 2.4
+Median Degree: 2
