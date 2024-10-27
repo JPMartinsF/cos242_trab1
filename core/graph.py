@@ -38,10 +38,7 @@ class Graph:
                 if representation == "Adjacency Matrix":
                     self.adjacency_matrix = self._initialize_adjacency_matrix()
                 elif representation == "Adjacency List":
-                    if weighted:
-                        self.adjacency_list = self._initialize_weighted_adjacency_list()
-                    else:
-                        self.adjacency_list = self._initialize_adjacency_list()
+                    self.adjacency_list = self._initialize_adjacency_list(weighted=weighted)
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
@@ -83,14 +80,10 @@ class Graph:
         np.fill_diagonal(matrix, 0)
         return matrix
 
-    def _initialize_adjacency_list(self):
+    def _initialize_adjacency_list(self, weighted):
         """Initializes an adjacency list for the graph."""
-        return {i: [] for i in range(1, self.graph_size + 1)}
-
-    def _initialize_weighted_adjacency_list(self):
-        """Initializes an adjacency list for the graph."""
-        return {i: {} for i in range(1, self.graph_size + 1)}
-
+        return {i: {} if weighted else [] for i in range(1, self.graph_size + 1)}
+        
     def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
         """Adds a edge to the adjacency matrix."""
         self.adjacency_matrix[u_node - 1][v_node - 1] = 1
@@ -355,6 +348,10 @@ class Graph:
         Returns:
             int: The estimated diameter of the graph.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
+        
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
