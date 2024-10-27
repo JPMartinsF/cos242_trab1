@@ -19,4 +19,4 @@ This `Graph` library provides a class for creating, managing, and analyzing grap
 To use this library, clone this repository and make sure the following dependencies are installed:
 
 ```bash
-pip install numpy
+pip install -t requirements.txt
