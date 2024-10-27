@@ -11,18 +11,18 @@ class Graph:
 
     def __init__(self) -> None:
         """Initializes the graph with default attributes."""
-        self.graph_size = 0
-        self.graph_links = []
-        self.node_degrees = {}
-        self.mean_grade = 0.0
-        self.median_grade = 0.0
-        self.min_degree = None
-        self.max_degree = None
-        self.adjacency_matrix = None
-        self.adjacency_list = None
-        self.is_weighted = False
+        self.graph_size: int = 0
+        self.graph_edges: list = []
+        self.node_degrees: dict = {}
+        self.mean_grade: float = 0.0
+        self.median_grade: int = 0
+        self.min_degree: int = None
+        self.max_degree: int = None
+        self.adjacency_matrix: list[list] = None
+        self.adjacency_list: list[list] = None
+        self.is_weighted: bool = False
 
-    def initialize_graph_from_txt(self, file_name: str, representation: str) -> None:
+    def initialize_graph_from_txt(self, file_name: str, representation: str, weighted: bool) -> None:
         """
         Initializes the graph from a text file.
 
@@ -33,28 +33,40 @@ class Graph:
         try:
             with open(file_name, "r", encoding="utf-8") as file:
                 self.graph_size = int(file.readline().strip())
-                self.graph_links = []
+                self.graph_edges = []
 
                 if representation == "Adjacency Matrix":
                     self.adjacency_matrix = self._initialize_adjacency_matrix()
                 elif representation == "Adjacency List":
-                    self.adjacency_list = self._initialize_adjacency_list()
+                    self.adjacency_list = self._initialize_adjacency_list(weighted=weighted)
                 else:
                     raise ValueError(f"Unsupported representation: {representation}")
 
                 for line in file.readlines():
-                    link_data = line.split()
-                    if len(link_data) == 3:
-                        u_node, v_node, link_weigth = int(link_data[0]), int(link_data[1]), float(link_data[2])
-                        self.graph_links.append((u_node, v_node))
+                    edge_data = line.split()
+                    if len(edge_data) == 2:
+                        u_node, v_node = int(edge_data[0]), int(edge_data[1])
+                        self.graph_edges.append((u_node, v_node))
 
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
 
                         if self.adjacency_matrix is not None:
-                            self._add_link_to_matrix(u_node, v_node, link_weigth)
+                            self._add_edge_to_matrix(u_node, v_node)
                         elif self.adjacency_list is not None:
-                            self._add_link_to_list(u_node, v_node, link_weigth)
+                            self._add_edge_to_list(u_node, v_node)
+                    if len(edge_data) == 3:
+                        self.is_weighted = True
+                        u_node, v_node, edge_weigth = int(edge_data[0]), int(edge_data[1]), float(edge_data[2])
+                        self.graph_edges.append((u_node, v_node))
+
+                        self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
+                        self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
+
+                        if self.adjacency_matrix is not None:
+                            self._add_weighted_edge_to_matrix(u_node, v_node, edge_weigth)
+                        elif self.adjacency_list is not None:
+                            self._add_weighted_edge_to_list(u_node, v_node, edge_weigth)
                     else:
                         print(f"Invalid node data: {line.strip()}")
 
@@ -68,19 +80,29 @@ class Graph:
         np.fill_diagonal(matrix, 0)
         return matrix
 
-    def _initialize_adjacency_list(self):
+    def _initialize_adjacency_list(self, weighted):
         """Initializes an adjacency list for the graph."""
-        return {i: {} for i in range(1, self.graph_size + 1)}
+        return {i: {} if weighted else [] for i in range(1, self.graph_size + 1)}
+        
+    def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
+        """Adds a edge to the adjacency matrix."""
+        self.adjacency_matrix[u_node - 1][v_node - 1] = 1
+        self.adjacency_matrix[v_node - 1][u_node - 1] = 1
 
-    def _add_link_to_matrix(self, u_node: int, v_node: int, link_weigth: float) -> None:
-        """Adds an link to the adjacency matrix."""
-        self.adjacency_matrix[u_node - 1][v_node - 1] = link_weigth
-        self.adjacency_matrix[v_node - 1][u_node - 1] = link_weigth
+    def _add_edge_to_list(self, u_node: int, v_node: int) -> None:
+        """Adds a edge to the adjacency list."""
+        self.adjacency_list[u_node].append(v_node)
+        self.adjacency_list[v_node].append(u_node)
 
-    def _add_link_to_list(self, u_node: int, v_node: int, link_weigth: float) -> None:
-        """Adds an link to the adjacency list."""
-        self.adjacency_list[u_node][v_node] = link_weigth
-        self.adjacency_list[v_node][u_node] = link_weigth
+    def _add_weighted_edge_to_matrix(self, u_node: int, v_node: int, edge_weigth: float) -> None:
+        """Adds a weighted edge to the adjacency matrix."""
+        self.adjacency_matrix[u_node - 1][v_node - 1] = edge_weigth
+        self.adjacency_matrix[v_node - 1][u_node - 1] = edge_weigth
+
+    def _add_weighted_edge_to_list(self, u_node: int, v_node: int, edge_weigth: float) -> None:
+        """Adds a weighted edge to the adjacency list."""
+        self.adjacency_list[u_node][v_node] = edge_weigth
+        self.adjacency_list[v_node][u_node] = edge_weigth
 
     def _calculate_node_metrics(self) -> None:
         """Calculates the min, max, mean, and median degrees of the graph's nodes."""
@@ -99,7 +121,7 @@ class Graph:
         """
         with open(filename, "w", encoding="utf-8") as file:
             file.write(f"Graph Size: {self.graph_size}\n")
-            file.write(f"Number of links: {len(self.graph_links)}\n")
+            file.write(f"Number of edges: {len(self.graph_edges)}\n")
             file.write(f"Min Degree: {self.min_degree}\n")
             file.write(f"Max Degree: {self.max_degree}\n")
             file.write(f"Mean Degree: {self.mean_grade}\n")
@@ -179,9 +201,10 @@ class Graph:
             bfs_order.append(current_node + 1)
 
             for neighbor in range(self.graph_size):
-                if self.adjacency_matrix[current_node][neighbor] == 1 and neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
+                if neighbor not in visited:
+                    if self.adjacency_matrix[current_node][neighbor] == 1:
+                        visited.add(neighbor)
+                        queue.append(neighbor)
 
         return bfs_order
 
@@ -250,8 +273,9 @@ class Graph:
                 dfs_order.append(node + 1)
 
                 for neighbor in range(self.graph_size - 1, -1, -1):
-                    if self.adjacency_matrix[node][neighbor] == 1 and neighbor not in visited:
-                        stack.append(neighbor)
+                    if neighbor not in visited:
+                        if self.adjacency_matrix[node][neighbor] == 1:
+                            stack.append(neighbor)
 
         return dfs_order
 
@@ -261,6 +285,10 @@ class Graph:
         Returns:
             int: The diameter of the graph.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
+
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
@@ -287,6 +315,9 @@ class Graph:
         Returns:
             int: The shortest path distance, or -1 if the target is not reachable.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
         if start_node == target_node:
             return 0
 
@@ -317,6 +348,10 @@ class Graph:
         Returns:
             int: The estimated diameter of the graph.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
+        
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1

@@ -7,9 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.graph import Graph
 
-def test_read(filename: str, representation: str) -> Graph:
+def test_read(filename: str, representation: str, weighted:bool) -> Graph:
     graph = Graph()
-    graph.initialize_graph_from_txt(filename, representation=representation)
+    graph.initialize_graph_from_txt(filename, representation=representation, weighted=weighted)
     return graph
 
 def test_info_file(graph: Graph, filename: str) -> None:
@@ -62,12 +62,12 @@ if __name__ == "__main__":
     test_info_path = os.path.join("data", "part_2", "test_graph_info.txt")
 
     print("\n--- Adjacency Matrix ---")
-    graph_matrix = test_read(test_graph_path, representation="Adjacency Matrix")
+    graph_matrix = test_read(test_graph_path, representation="Adjacency Matrix", weighted=True)
     test_info_file(graph_matrix, test_info_path)
     test_bfs_adjacency_matrix(graph_matrix, start_node=1)
     test_dfs_adjacency_matrix(graph_matrix, start_node=1)
     print("\n--- Adjacency List ---")
-    graph_list = test_read(test_graph_path, representation="Adjacency List")
+    graph_list = test_read(test_graph_path, representation="Adjacency List", weighted=True)
     test_info_file(graph_list, test_info_path)
     test_bfs_adjacency_list(graph_list, start_node=1)
     test_dfs_adjacency_list(graph_list, start_node=1)
@@ -79,15 +79,15 @@ if __name__ == "__main__":
     sample_size = 3
     test_approximate_diameter(graph_list, sample_size)
 
-    graph_file_number = "5"
+    # graph_file_number = "5"
 
-    graph_path = os.path.join("data", f"grafo_{graph_file_number}.txt")
-    info_path = os.path.join("data", f"grafo_{graph_file_number}_info.txt")
+    # graph_path = os.path.join("data", f"grafo_{graph_file_number}.txt")
+    # info_path = os.path.join("data", f"grafo_{graph_file_number}_info.txt")
 
-    graph = test_read(graph_path, representation="Adjacency List")
-    test_info_file(graph, info_path)
+    # graph = test_read(graph_path, representation="Adjacency List")
+    # test_info_file(graph, info_path)
 
-    print(graph.calculate_approximate_diameter(3))
+    # print(graph.calculate_approximate_diameter(3))
 
     # print(list(aux.keys()))
     # print("LEN", len(aux))
