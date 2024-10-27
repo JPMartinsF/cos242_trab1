@@ -292,6 +292,10 @@ class Graph:
         Returns:
             int: The diameter of the graph.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
+
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
@@ -318,6 +322,9 @@ class Graph:
         Returns:
             int: The shortest path distance, or -1 if the target is not reachable.
         """
+        if self.is_weighted:
+            print("Graph is weighted, please use Djikstra.")
+            return 
         if start_node == target_node:
             return 0
 
