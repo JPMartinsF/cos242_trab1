@@ -61,23 +61,28 @@ if __name__ == "__main__":
     test_graph_path = os.path.join("data", "part_2", "test_graph.txt")
     test_info_path = os.path.join("data", "part_2", "test_graph_info.txt")
 
-    print("\n--- Adjacency Matrix ---")
-    graph_matrix = test_read(test_graph_path, representation="Adjacency Matrix", weighted=True)
-    test_info_file(graph_matrix, test_info_path)
-    test_bfs_adjacency_matrix(graph_matrix, start_node=1)
-    test_dfs_adjacency_matrix(graph_matrix, start_node=1)
+    # print("\n--- Adjacency Matrix ---")
+    # graph_matrix = test_read(test_graph_path, representation="Adjacency Matrix", weighted=True)
+    # test_info_file(graph_matrix, test_info_path)
+    # test_bfs_adjacency_matrix(graph_matrix, start_node=1)
+    # test_dfs_adjacency_matrix(graph_matrix, start_node=1)
     print("\n--- Adjacency List ---")
     graph_list = test_read(test_graph_path, representation="Adjacency List", weighted=True)
-    test_info_file(graph_list, test_info_path)
-    test_bfs_adjacency_list(graph_list, start_node=1)
-    test_dfs_adjacency_list(graph_list, start_node=1)
-    test_bfs_distance(graph_list, start_node=1, target_node=5)
-    test_bfs_distance(graph_list, start_node=1, target_node=2)
-    test_bfs_distance(graph_list, start_node=1, target_node=3)
-    test_diameter(graph_list)
-    test_connected_components(graph_list)
-    sample_size = 3
-    test_approximate_diameter(graph_list, sample_size)
+    # test_info_file(graph_list, test_info_path)
+    # test_bfs_adjacency_list(graph_list, start_node=1)
+    # test_dfs_adjacency_list(graph_list, start_node=1)
+    # test_bfs_distance(graph_list, start_node=1, target_node=5)
+    # test_bfs_distance(graph_list, start_node=1, target_node=2)
+    # test_bfs_distance(graph_list, start_node=1, target_node=3)
+    # test_diameter(graph_list)
+    # test_connected_components(graph_list)
+    # sample_size = 3
+    # test_approximate_diameter(graph_list, sample_size)
+
+    print(graph_list.adjacency_list)
+    print(graph_list.dijkstra(3))
+    print(graph_list.dijkstra(3, True))
+
 
     # graph_file_number = "5"
 
