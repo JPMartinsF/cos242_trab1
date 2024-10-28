@@ -1,6 +1,7 @@
 import statistics
 import numpy as np
 import random
+from heapq import heapify, heappop, heappush
 
 class Graph:
     """
@@ -21,6 +22,7 @@ class Graph:
         self.adjacency_matrix: list[list] = None
         self.adjacency_list: list[list] = None
         self.is_weighted: bool = False
+        self.has_negative_weight: bool = False
 
     def initialize_graph_from_txt(self, file_name: str, representation: str, weighted: bool) -> None:
         """
@@ -59,6 +61,9 @@ class Graph:
                         self.is_weighted = True
                         u_node, v_node, edge_weigth = int(edge_data[0]), int(edge_data[1]), float(edge_data[2])
                         self.graph_edges.append((u_node, v_node))
+
+                        if edge_weigth < 0:
+                            self.has_negative_weight = True
 
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
                         self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
@@ -420,3 +425,59 @@ class Graph:
                     queue.append(neighbor)
 
         return component
+
+    def dijkstra(self, start_node: int, heap: bool = False):
+        if self.has_negative_weight:
+            return -1
+        
+        if heap:
+            return self.dijkstra_heap(start_node)
+
+        parents = [start_node] * self.graph_size
+        S = set()
+        dist = [1e7] * self.graph_size
+        dist[start_node - 1] = 0
+
+        while len(S) != self.graph_size:
+            min_dist = 1e7
+            u = 0
+            for i in range(self.graph_size):
+                if i in S: continue
+                
+                if dist[i] < min_dist:
+                    min_dist = dist[i]
+                    u = i
+
+            S.add(u)
+            for v in self.adjacency_list[u + 1]:
+                if dist[v - 1] > dist[u] + self.adjacency_list[u + 1][v]:
+                    dist[v - 1] = dist[u] + self.adjacency_list[u + 1][v]
+                    parents[v - 1] = u + 1
+
+        return dist, parents
+    
+    def dijkstra_heap(self, start_node: int):
+        S = set()
+        dist = [float("inf")] * self.graph_size
+        dist[start_node - 1] = 0
+        parents = [start_node] * self.graph_size
+
+        queue = [(0, start_node)]
+        heapify(queue)
+
+        while queue:
+            current_dist, current_node = heappop(queue)
+            
+            if current_node in S:
+                continue
+
+            S.add(current_node)
+
+            for v in self.adjacency_list[current_node]:
+                aux = current_dist + self.adjacency_list[current_node][v]
+                if dist[v - 1] > aux:
+                    dist[v - 1] = aux
+                    heappush(queue, (aux, v))
+                    parents[v - 1] = current_node
+
+        return dist, parents
