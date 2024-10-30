@@ -431,7 +431,7 @@ class Graph:
             return -1
 
         if heap:
-            return self.dijkstra_heap(start_node)
+            return self._dijkstra_heap(start_node)
 
         parents = [start_node] * self.graph_size
         S = set()
@@ -457,7 +457,7 @@ class Graph:
 
         return dist, parents
 
-    def dijkstra_heap(self, start_node: int):
+    def _dijkstra_heap(self, start_node: int):
         s = set()
         dist = [float("inf")] * self.graph_size
         dist[start_node - 1] = 0
