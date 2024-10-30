@@ -33,10 +33,10 @@ def match_node_to_researcher(node: int, label_dict: dict) -> int:
     print(f"Node '{node}' not found.")
     return -1  
 
-def find_researcher_shortest_path(distances: list, parents: list, origin_node: int, destination_node: int, label_dict: dict) -> list:
+def find_researcher_shortest_path(distances: list, parents: list, origin_node: int, destination_node: int, label_dict: dict) -> tuple:
     if distances[destination_node - 1] == float("inf"):
         print(f"No path from node {origin_node} to node {destination_node}")
-        return []
+        return [], float("inf")
 
     shortest_path = []
     current_node = destination_node
@@ -45,16 +45,16 @@ def find_researcher_shortest_path(distances: list, parents: list, origin_node: i
         current_node = parents[current_node - 1]
     shortest_path.append(match_node_to_researcher(origin_node, label_dict))
     shortest_path.reverse()
-    return shortest_path
+    return shortest_path, distances[destination_node - 1]
 
 if __name__ == "__main__":
     colab_filename = os.path.join("data", "part_2", "rede_colaboracao.txt")
     colab_label_filename = os.path.join("data", "part_2", "rede_colaboracao_vertices.txt")
 
+    start_time = time.time()
     graph = read_colab_network(filename=colab_filename)
     lbl_dict = read_colab_network_labels(filename=colab_label_filename)
     orig_node = match_researcher_to_node("Edsger W. Dijkstra", lbl_dict)
-    start_time = time.time()
     dists, prnts = graph.dijkstra(orig_node, heap=True)
 
     researchers = [
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     total_time = time.time() - start_time
 
-    for rsrchr, path in paths.items():
-        print(f"Path to {rsrchr}: {path}")
+    for rsrchr, (path, distance) in paths.items():
+        print(f"Path to {rsrchr}: {path}, Distance: {distance}\n")
 
     print(f"Algorithm runtime: {total_time:.4f} seconds")
