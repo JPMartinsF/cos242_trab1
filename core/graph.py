@@ -30,7 +30,7 @@ class Graph:
 
         Args:
             file_name (str): The name of the file to read the graph from.
-            representation (str): The representation to use ('Adjacency Matrix' or 'Adjacency List').
+            representation (str): The representation wanted ('Adjacency Matrix' or 'Adjacency List').
         """
         try:
             with open(file_name, "r", encoding="utf-8") as file:
@@ -88,7 +88,7 @@ class Graph:
     def _initialize_adjacency_list(self, weighted):
         """Initializes an adjacency list for the graph."""
         return {i: {} if weighted else [] for i in range(1, self.graph_size + 1)}
-        
+
     def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
         """Adds a edge to the adjacency matrix."""
         self.adjacency_matrix[u_node - 1][v_node - 1] = 1
@@ -292,7 +292,7 @@ class Graph:
         """
         if self.is_weighted:
             print("Graph is weighted, please use Djikstra.")
-            return 
+            return -1
 
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
@@ -322,7 +322,7 @@ class Graph:
         """
         if self.is_weighted:
             print("Graph is weighted, please use Djikstra.")
-            return 
+            return -1
         if start_node == target_node:
             return 0
 
@@ -355,8 +355,8 @@ class Graph:
         """
         if self.is_weighted:
             print("Graph is weighted, please use Djikstra.")
-            return 
-        
+            return -1
+
         if self.adjacency_list is None:
             print("Adjacency list is not initialized.")
             return -1
@@ -429,9 +429,9 @@ class Graph:
     def dijkstra(self, start_node: int, heap: bool = False):
         if self.has_negative_weight:
             return -1
-        
+
         if heap:
-            return self.dijkstra_heap(start_node)
+            return self._dijkstra_heap(start_node)
 
         parents = [start_node] * self.graph_size
         S = set()
@@ -442,8 +442,9 @@ class Graph:
             min_dist = 1e7
             u = 0
             for i in range(self.graph_size):
-                if i in S: continue
-                
+                if i in S:
+                    continue
+
                 if dist[i] < min_dist:
                     min_dist = dist[i]
                     u = i
@@ -455,9 +456,9 @@ class Graph:
                     parents[v - 1] = u + 1
 
         return dist, parents
-    
-    def dijkstra_heap(self, start_node: int):
-        S = set()
+
+    def _dijkstra_heap(self, start_node: int):
+        s = set()
         dist = [float("inf")] * self.graph_size
         dist[start_node - 1] = 0
         parents = [start_node] * self.graph_size
@@ -467,11 +468,11 @@ class Graph:
 
         while queue:
             current_dist, current_node = heappop(queue)
-            
-            if current_node in S:
+
+            if current_node in s:
                 continue
 
-            S.add(current_node)
+            s.add(current_node)
 
             for v in self.adjacency_list[current_node]:
                 aux = current_dist + self.adjacency_list[current_node][v]
