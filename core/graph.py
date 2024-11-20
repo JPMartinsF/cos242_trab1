@@ -22,9 +22,10 @@ class Graph:
         self.adjacency_matrix: list[list] = None
         self.adjacency_list: list[list] = None
         self.is_weighted: bool = False
+        self.is_directed: bool = False
         self.has_negative_weight: bool = False
 
-    def initialize_graph_from_txt(self, file_name: str, representation: str, weighted: bool) -> None:
+    def initialize_graph_from_txt(self, file_name: str, representation: str, weighted: bool, directed: bool) -> None:
         """
         Initializes the graph from a text file.
 
@@ -32,6 +33,7 @@ class Graph:
             file_name (str): The name of the file to read the graph from.
             representation (str): The representation wanted ('Adjacency Matrix' or 'Adjacency List').
         """
+        self.is_directed = directed
         try:
             with open(file_name, "r", encoding="utf-8") as file:
                 self.graph_size = int(file.readline().strip())
@@ -51,27 +53,29 @@ class Graph:
                         self.graph_edges.append((u_node, v_node))
 
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
-                        self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
+                        if not directed:
+                            self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
 
                         if self.adjacency_matrix is not None:
                             self._add_edge_to_matrix(u_node, v_node)
                         elif self.adjacency_list is not None:
                             self._add_edge_to_list(u_node, v_node)
-                    if len(edge_data) == 3:
+                    elif len(edge_data) == 3:
                         self.is_weighted = True
-                        u_node, v_node, edge_weigth = int(edge_data[0]), int(edge_data[1]), float(edge_data[2])
+                        u_node, v_node, edge_weight = int(edge_data[0]), int(edge_data[1]), float(edge_data[2])
                         self.graph_edges.append((u_node, v_node))
 
-                        if edge_weigth < 0:
+                        if edge_weight < 0:
                             self.has_negative_weight = True
 
                         self.node_degrees[u_node] = self.node_degrees.get(u_node, 0) + 1
-                        self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
+                        if not directed:
+                            self.node_degrees[v_node] = self.node_degrees.get(v_node, 0) + 1
 
                         if self.adjacency_matrix is not None:
-                            self._add_weighted_edge_to_matrix(u_node, v_node, edge_weigth)
+                            self._add_weighted_edge_to_matrix(u_node, v_node, edge_weight)
                         elif self.adjacency_list is not None:
-                            self._add_weighted_edge_to_list(u_node, v_node, edge_weigth)
+                            self._add_weighted_edge_to_list(u_node, v_node, edge_weight)
                     else:
                         print(f"Invalid node data: {line.strip()}")
 
