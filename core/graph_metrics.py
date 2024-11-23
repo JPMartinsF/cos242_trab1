@@ -1,5 +1,5 @@
 import statistics
-from core import AdjacencyList, AdjacencyMatrix
+from core.graph_representations import AdjacencyList, AdjacencyMatrix
 
 class GraphMetrics:
     """Calculates metrics for a graph."""

@@ -1,4 +1,4 @@
-from core import AdjacencyMatrix, AdjacencyList
+from core.graph_representations import AdjacencyMatrix, AdjacencyList
 
 class GraphIO:
     """Handles file input and output for the graph."""
