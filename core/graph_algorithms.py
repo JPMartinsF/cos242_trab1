@@ -1,7 +1,9 @@
 import heapq
-from collections import deque
-from core.graph_representations import AdjacencyList, AdjacencyMatrix
 from collections import defaultdict
+from collections import deque
+
+from core.graph_representations import AdjacencyList
+from core.graph_representations import AdjacencyMatrix
 
 class GraphTraversal:
     """Implements traversal algorithms for the graph."""

@@ -1,4 +1,5 @@
-from core.graph_representations import AdjacencyMatrix, AdjacencyList
+from core.graph_representations import AdjacencyList
+from core.graph_representations import AdjacencyMatrix
 # from core.graph_new import Graph
 
 class GraphIO:

@@ -1,7 +1,10 @@
-import statistics
-import numpy as np
 import random
-from heapq import heapify, heappop, heappush
+import statistics
+from heapq import heapify
+from heapq import heappop
+from heapq import heappush
+
+import numpy as np
 
 class Graph:
     """

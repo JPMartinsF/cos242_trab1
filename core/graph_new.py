@@ -1,7 +1,10 @@
-from core.graph_representations import AdjacencyList, AdjacencyMatrix
-from core.graph_algorithms import GraphAlgorithms, GraphTraversal, GraphFlowNetwork
-from core.graph_metrics import GraphMetrics
+from core.graph_algorithms import GraphAlgorithms
+from core.graph_algorithms import GraphFlowNetwork
+from core.graph_algorithms import GraphTraversal
 from core.graph_io import GraphIO
+from core.graph_metrics import GraphMetrics
+from core.graph_representations import AdjacencyList
+from core.graph_representations import AdjacencyMatrix
 
 class Graph:
     """High-level class managing the graph by delegating tasks to appropriate classes."""
