@@ -5,7 +5,8 @@ class GraphIO:
     """Handles file input and output for the graph."""
 
     @staticmethod
-    def load_graph_from_file(file_name: str, representation: str, size: int, weighted: bool):
+    def load_graph_from_file(file_name: str, representation: str, size: int, weighted: bool, directed: bool = False):
+        """Loads a graph from a file based on its representation (Adjacency Matrix or List)."""
         if representation == "Adjacency Matrix":
             graph = AdjacencyMatrix(size)
         elif representation == "Adjacency List":
@@ -19,9 +20,14 @@ class GraphIO:
                 if weighted:
                     u, v, weight = int(edge_data[0]), int(edge_data[1]), float(edge_data[2])
                     graph.add_edge(u, v, weight)
+                    if not directed:
+                        graph.add_edge(v, u, weight)
                 else:
                     u, v = int(edge_data[0]), int(edge_data[1])
                     graph.add_edge(u, v)
+                    if not directed:
+                        graph.add_edge(v, u)
+
         return graph
 
     @staticmethod
