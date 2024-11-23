@@ -9,12 +9,12 @@ def test_read(filename: str, representation: str, weighted: bool, directed: bool
     """Initializes a graph from a text file."""
     size = 0
     with open(filename, "r", encoding="utf-8") as file:
-        size = int(file.readline().strip())  # First line specifies the graph size
+        size = int(file.readline().strip())
 
     graph = Graph(size=size, representation=representation, weighted=weighted, directed=directed)
 
     with open(filename, "r", encoding="utf-8") as file:
-        next(file)  # Skip the first line
+        next(file)
         for line in file:
             edge_data = line.split()
             if weighted and len(edge_data) == 3:
@@ -50,6 +50,14 @@ def test_dijkstra(graph: Graph, start_node: int) -> tuple:
     print(f"Parents: {parents}")
     return distances, parents
 
+def test_ford_fulkerson(graph: Graph, source: int, sink: int) -> None:
+    """Tests Ford-Fulkerson algorithm for maximum flow."""
+    if graph.is_directed:
+        max_flow = graph.ford_fulkerson(source, sink)
+        print(f"Ford-Fulkerson Max Flow from node {source} to node {sink}: {max_flow}")
+    else:
+        print("Ford-Fulkerson algorithm is only applicable to directed graphs.")
+
 if __name__ == "__main__":
     test_graph_path = os.path.join("data", "part_2", "test_graph.txt")
     test_info_path = os.path.join("data", "part_2", "test_graph_info.txt")
@@ -66,3 +74,20 @@ if __name__ == "__main__":
 
     # Test Dijkstra's algorithm
     test_dijkstra(graph_list, start_node=1)
+
+    # Test Ford-Fulkerson algorithm
+    test_ford_fulkerson(graph_list, source=1, sink=5)
+
+'''
+test_graph
+#1_0.1>_#2
+ |    /
+ 1  0.2
+ | v
+ v
+ #5
+ ^  \
+ 2.3  5
+ |     v
+#4<_-9.5_#3
+'''
