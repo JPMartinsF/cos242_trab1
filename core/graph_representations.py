@@ -48,4 +48,3 @@ class AdjacencyList:
 
     def get_representation(self):
         return self.list
-
