@@ -95,7 +95,7 @@ class GraphTraversal:
             raise ValueError("Unsupported graph representation.")
         
 
-class GraphAlgorithms:
+class GraphDijkstra:
     """Implements algorithms like Dijkstra and Connected Components."""
 
     def __init__(self, representation):
@@ -127,3 +127,100 @@ class GraphAlgorithms:
             raise NotImplementedError("Dijkstra's algorithm for Adjacency Matrix is not implemented yet.")
         else:
             raise ValueError("Unsupported graph representation.")
+        
+from collections import defaultdict, deque
+
+class FlowNetwork:
+    def __init__(self):
+        self.graph = defaultdict(dict)
+        self.residual = defaultdict(dict)
+
+    def add_edge(self, u, v, capacity):
+        """
+        Adiciona uma aresta com capacidade ao grafo.
+        """
+        if capacity <= 0:
+            raise ValueError("Capacity must be positive.")
+        self.graph[u][v] = {"capacity": capacity, "flow": 0}
+        self.graph[v][u] = {"capacity": 0, "flow": 0}
+
+    def build_residual_graph(self):
+        """
+        Constroi o grafo residual a partir do grafo original.
+        """
+        self.residual.clear()
+        for u in self.graph:
+            for v, data in self.graph[u].items():
+                capacity = data["capacity"] - data["flow"]
+                if capacity > 0:
+                    self.residual[u][v] = {"capacity": capacity, "original": 1}
+                if data["flow"] > 0:
+                    self.residual[v][u] = {"capacity": data["flow"], "original": 0}
+
+    def find_augmenting_path(self, source, bottleneck):
+        """
+        Encontra um caminho aumentante no grafo residual usando BFS.
+        Retorna o caminho e o gargalo.
+        """
+        parent = {source: None}
+        queue = deque([source])
+        while queue:
+            current = queue.popleft()
+            if current == bottleneck:
+                break
+            for neighbor, data in self.residual[current].items():
+                if neighbor not in parent and data["capacity"] > 0:
+                    parent[neighbor] = current
+                    queue.append(neighbor)
+
+        if bottleneck not in parent:
+            return None, 0
+
+        path = []
+        current = bottleneck
+        bottleneck = float("inf")
+        while parent[current] is not None:
+            prev = parent[current]
+            path.append((prev, current))
+            bottleneck = min(bottleneck, self.residual[prev][current]["capacity"])
+            current = prev
+        path.reverse()
+        return path, bottleneck
+
+    def update_flows(self, path, bottleneck):
+        """
+        Atualiza os fluxos no grafo original e no grafo residual.
+        """
+        for u, v in path:
+            if v in self.graph[u]:
+                self.graph[u][v]["flow"] += bottleneck
+            if u in self.graph[v]:
+                self.graph[v][u]["flow"] -= bottleneck
+
+    def ford_fulkerson(self, source, bottleneck, save_to_file=None):
+        """
+        Executa o algoritmo de Ford-Fulkerson para encontrar o fluxo máximo.
+        """
+        max_flow = 0
+        while True:
+            self.build_residual_graph()
+            path, bottleneck = self.find_augmenting_path(source, bottleneck)
+            if not path or bottleneck == 0:
+                break
+            self.update_flows(path, bottleneck)
+            max_flow += bottleneck
+
+        if save_to_file:
+            self.save_flows_to_file(save_to_file)
+
+        return max_flow
+
+    def save_flows_to_file(self, filename):
+        """
+        Salva as arestas e os fluxos em um arquivo.
+        """
+        with open(filename, "w") as file:
+            for u in self.graph:
+                for v, data in self.graph[u].items():
+                    if data["flow"] > 0:
+                        file.write(f"{u} {v} {data['flow']}\n")
