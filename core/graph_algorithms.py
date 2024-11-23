@@ -2,7 +2,7 @@ import heapq
 from collections import deque
 from core import AdjacencyList, AdjacencyMatrix
 
-class GraphAlgorithms:
+class GraphTraversal:
     """Implements traversal algorithms for the graph."""
 
     def __init__(self, representation):
@@ -94,6 +94,13 @@ class GraphAlgorithms:
         else:
             raise ValueError("Unsupported graph representation.")
         
+
+class GraphAgorithms:
+    """Implements algorithms like Dijkstra and Connected Components."""
+
+    def __init__(self, representation):
+        self.representation = representation
+
     def dijkstra(self, start_node: int):
         """Implements Dijkstra's algorithm for shortest paths."""
         if isinstance(self.representation, AdjacencyList):
