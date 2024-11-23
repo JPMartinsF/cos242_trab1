@@ -1,4 +1,4 @@
-from core import AdjacencyList, AdjacencyMatrix, GraphMetrics, GraphAlgorithms
+from core import AdjacencyList, AdjacencyMatrix, GraphMetrics, GraphAlgorithms, GraphTraversal
 
 class Graph:
     """High-level class managing the graph by delegating tasks to appropriate classes."""
@@ -32,7 +32,3 @@ class Graph:
     def dijkstra(self, start_node: int):
         """Delegates Dijkstra's algorithm to the algorithms class."""
         return self.algorithms.dijkstra(start_node)
-
-    def connected_components(self):
-        """Delegates finding connected components to the algorithms class."""
-        return self.algorithms.find_connected_components()
