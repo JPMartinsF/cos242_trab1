@@ -1,3 +1,4 @@
+import heapq
 from collections import deque
 from core import AdjacencyList, AdjacencyMatrix
 
@@ -90,5 +91,32 @@ class GraphAlgorithms:
 
             _dfs(start_node - 1)
             return dfs_order
+        else:
+            raise ValueError("Unsupported graph representation.")
+        
+    def dijkstra(self, start_node: int):
+        """Implements Dijkstra's algorithm for shortest paths."""
+        if isinstance(self.representation, AdjacencyList):
+            adj_list = self.representation.get_representation()
+
+            dist = {node: float("inf") for node in adj_list}
+            dist[start_node] = 0
+            priority_queue = [(0, start_node)]
+            parents = {node: None for node in adj_list}
+
+            while priority_queue:
+                current_dist, current_node = heapq.heappop(priority_queue)
+
+                for neighbor, weight in adj_list[current_node].items():
+                    new_dist = current_dist + weight
+                    if new_dist < dist[neighbor]:
+                        dist[neighbor] = new_dist
+                        parents[neighbor] = current_node
+                        heapq.heappush(priority_queue, (new_dist, neighbor))
+
+            return dist, parents
+
+        elif isinstance(self.representation, AdjacencyMatrix):
+            raise NotImplementedError("Dijkstra's algorithm for Adjacency Matrix is not implemented yet.")
         else:
             raise ValueError("Unsupported graph representation.")
