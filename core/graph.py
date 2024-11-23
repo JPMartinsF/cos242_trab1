@@ -94,24 +94,28 @@ class Graph:
         return {i: {} if weighted else [] for i in range(1, self.graph_size + 1)}
 
     def _add_edge_to_matrix(self, u_node: int, v_node: int) -> None:
-        """Adds a edge to the adjacency matrix."""
+        """Adds an edge to the adjacency matrix."""
         self.adjacency_matrix[u_node - 1][v_node - 1] = 1
-        self.adjacency_matrix[v_node - 1][u_node - 1] = 1
+        if not self.is_directed:
+            self.adjacency_matrix[v_node - 1][u_node - 1] = 1
 
     def _add_edge_to_list(self, u_node: int, v_node: int) -> None:
-        """Adds a edge to the adjacency list."""
+        """Adds an edge to the adjacency list."""
         self.adjacency_list[u_node].append(v_node)
-        self.adjacency_list[v_node].append(u_node)
+        if not self.is_directed:
+            self.adjacency_list[v_node].append(u_node)
 
-    def _add_weighted_edge_to_matrix(self, u_node: int, v_node: int, edge_weigth: float) -> None:
+    def _add_weighted_edge_to_matrix(self, u_node: int, v_node: int, edge_weight: float) -> None:
         """Adds a weighted edge to the adjacency matrix."""
-        self.adjacency_matrix[u_node - 1][v_node - 1] = edge_weigth
-        self.adjacency_matrix[v_node - 1][u_node - 1] = edge_weigth
+        self.adjacency_matrix[u_node - 1][v_node - 1] = edge_weight
+        if not self.is_directed:
+            self.adjacency_matrix[v_node - 1][u_node - 1] = edge_weight
 
-    def _add_weighted_edge_to_list(self, u_node: int, v_node: int, edge_weigth: float) -> None:
+    def _add_weighted_edge_to_list(self, u_node: int, v_node: int, edge_weight: float) -> None:
         """Adds a weighted edge to the adjacency list."""
-        self.adjacency_list[u_node][v_node] = edge_weigth
-        self.adjacency_list[v_node][u_node] = edge_weigth
+        self.adjacency_list[u_node][v_node] = edge_weight
+        if not self.is_directed:
+            self.adjacency_list[v_node][u_node] = edge_weight
 
     def _calculate_node_metrics(self) -> None:
         """Calculates the min, max, mean, and median degrees of the graph's nodes."""
