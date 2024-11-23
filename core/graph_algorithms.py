@@ -1,6 +1,7 @@
 import heapq
 from collections import deque
 from core.graph_representations import AdjacencyList, AdjacencyMatrix
+from collections import defaultdict
 
 class GraphTraversal:
     """Implements traversal algorithms for the graph."""
@@ -95,8 +96,8 @@ class GraphTraversal:
             raise ValueError("Unsupported graph representation.")
         
 
-class GraphDijkstra:
-    """Implements algorithms like Dijkstra and Connected Components."""
+class GraphAlgorithms:
+    """Implements algorithms like Dijkstra."""
 
     def __init__(self, representation):
         self.representation = representation
@@ -128,9 +129,7 @@ class GraphDijkstra:
         else:
             raise ValueError("Unsupported graph representation.")
         
-from collections import defaultdict, deque
-
-class FlowNetwork:
+class GraphFlowNetwork:
     def __init__(self):
         self.graph = defaultdict(dict)
         self.residual = defaultdict(dict)
