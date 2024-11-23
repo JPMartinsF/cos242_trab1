@@ -95,7 +95,7 @@ class GraphTraversal:
             raise ValueError("Unsupported graph representation.")
         
 
-class GraphAgorithms:
+class GraphAlgorithms:
     """Implements algorithms like Dijkstra and Connected Components."""
 
     def __init__(self, representation):
