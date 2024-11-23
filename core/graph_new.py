@@ -1,5 +1,5 @@
 from core.graph_representations import AdjacencyList, AdjacencyMatrix
-from core.graph_algorithms import GraphAlgorithms, GraphTraversal
+from core.graph_algorithms import GraphAlgorithms, GraphTraversal, GraphFlowNetwork
 from core.graph_metrics import GraphMetrics
 from core.graph_io import GraphIO
 
@@ -18,9 +18,14 @@ class Graph:
         self.algorithms = GraphAlgorithms(self.representation)
         self.file_io = GraphIO
 
+        if directed:
+            self.flow_network = GraphFlowNetwork()
+
     def add_edge(self, u: int, v: int, weight: float = 1):
         """Adds an edge to the graph."""
         self.representation.add_edge(u, v, weight)
+        if self.is_directed:
+            self.flow_network.add_edge(u, v, weight)  
 
     def get_degree_metrics(self):
         """Fetches degree metrics."""
@@ -37,3 +42,11 @@ class Graph:
     def dijkstra(self, start_node: int):
         """Delegates Dijkstra's algorithm to the algorithms class."""
         return self.algorithms.dijkstra(start_node)
+
+    def ford_fulkerson(self, source: int, target: int, bottleneck: float = float('inf'), save_to_file=None):
+        """Runs the Ford-Fulkerson algorithm to find the maximum flow in a directed graph."""
+        if not self.is_directed:
+            raise ValueError("Ford-Fulkerson is only applicable for directed graphs.")
+
+        max_flow = self.flow_network.ford_fulkerson(source, target, bottleneck, save_to_file)
+        return max_flow
