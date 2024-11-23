@@ -6,9 +6,10 @@ from core.graph_io import GraphIO
 class Graph:
     """High-level class managing the graph by delegating tasks to appropriate classes."""
 
-    def __init__(self, size: int, representation: str, weighted: bool = False):
+    def __init__(self, size: int, representation: str, weighted: bool = False, directed: bool = False):
         self.size = size
         self.weighted = weighted
+        self.is_directed = directed
         self.representation = (
             AdjacencyMatrix(size) if representation == "Adjacency Matrix" else AdjacencyList(size, weighted)
         )

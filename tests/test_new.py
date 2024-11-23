@@ -5,13 +5,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core import Graph
 
-def test_read(filename: str, representation: str, weighted: bool) -> Graph:
+def test_read(filename: str, representation: str, weighted: bool, directed: bool) -> Graph:
     """Initializes a graph from a text file."""
     size = 0
     with open(filename, "r", encoding="utf-8") as file:
         size = int(file.readline().strip())  # First line specifies the graph size
 
-    graph = Graph(size=size, representation=representation, weighted=weighted)
+    graph = Graph(size=size, representation=representation, weighted=weighted, directed=directed)
 
     with open(filename, "r", encoding="utf-8") as file:
         next(file)  # Skip the first line
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     test_info_path = os.path.join("data", "part_2", "test_graph_info.txt")
 
     print("\n--- Adjacency List ---")
-    graph_list = test_read(test_graph_path, representation="Adjacency List", weighted=True)
+    graph_list = test_read(test_graph_path, representation="Adjacency List", weighted=True, directed=True)
 
     # Test graph metrics and info writing
     test_info_file(graph_list, test_info_path)

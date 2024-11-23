@@ -39,12 +39,15 @@ class GraphIO:
             matrix = graph.representation.get_representation()
             num_edges = sum(
                 1 for i in range(len(matrix)) for j in range(len(matrix[i]))
-                if matrix[i][j] != float('inf') and matrix[i][j] != 0) // 2
+                if matrix[i][j] != float('inf') and matrix[i][j] != 0
+        )  // (2 if graph.is_directed else 1)
+
         elif isinstance(graph.representation, AdjacencyList):
             adj_list = graph.representation.get_representation()
             num_edges = sum(
                 len(neighbors) if isinstance(neighbors, list) else len(neighbors.keys())
-                for neighbors in adj_list.values()) // 2
+                for neighbors in adj_list.values()
+        )  // (2 if graph.is_directed else 1)
 
         graph_stats = {
             "Graph Size": graph.size,
