@@ -135,18 +135,14 @@ class GraphFlowNetwork:
         self.residual = defaultdict(dict)
 
     def add_edge(self, u, v, capacity):
-        """
-        Adiciona uma aresta com capacidade ao grafo.
-        """
+        """Adds an edge with capacity to the graph."""
         if capacity <= 0:
             raise ValueError("Capacity must be positive.")
         self.graph[u][v] = {"capacity": capacity, "flow": 0}
-        self.graph[v][u] = {"capacity": 0, "flow": 0}
+        self.graph[v][u] = {"capacity": 0, "flow": 0}  # Reverse edge for residual graph
 
     def build_residual_graph(self):
-        """
-        Constroi o grafo residual a partir do grafo original.
-        """
+        """Builds the residual graph."""
         self.residual.clear()
         for u in self.graph:
             for v, data in self.graph[u].items():
@@ -157,10 +153,7 @@ class GraphFlowNetwork:
                     self.residual[v][u] = {"capacity": data["flow"], "original": 0}
 
     def find_augmenting_path(self, source, bottleneck):
-        """
-        Encontra um caminho aumentante no grafo residual usando BFS.
-        Retorna o caminho e o gargalo.
-        """
+        """Finds an augmenting path using BFS and returns the path and bottleneck."""
         parent = {source: None}
         queue = deque([source])
         while queue:
@@ -187,23 +180,17 @@ class GraphFlowNetwork:
         return path, bottleneck
 
     def update_flows(self, path, bottleneck):
-        """
-        Atualiza os fluxos no grafo original e no grafo residual.
-        """
+        """Updates flows in the graph and residual graph."""
         for u, v in path:
-            if v in self.graph[u]:
-                self.graph[u][v]["flow"] += bottleneck
-            if u in self.graph[v]:
-                self.graph[v][u]["flow"] -= bottleneck
+            self.graph[u][v]["flow"] += bottleneck
+            self.graph[v][u]["flow"] -= bottleneck
 
-    def ford_fulkerson(self, source, bottleneck, save_to_file=None):
-        """
-        Executa o algoritmo de Ford-Fulkerson para encontrar o fluxo máximo.
-        """
+    def ford_fulkerson(self, source, target, bottleneck, save_to_file=None):
+        """Executes the Ford-Fulkerson algorithm to find the maximum flow."""
         max_flow = 0
         while True:
             self.build_residual_graph()
-            path, bottleneck = self.find_augmenting_path(source, bottleneck)
+            path, bottleneck = self.find_augmenting_path(source, target)
             if not path or bottleneck == 0:
                 break
             self.update_flows(path, bottleneck)
@@ -215,9 +202,7 @@ class GraphFlowNetwork:
         return max_flow
 
     def save_flows_to_file(self, filename):
-        """
-        Salva as arestas e os fluxos em um arquivo.
-        """
+        """Saves the flow information to a file."""
         with open(filename, "w") as file:
             for u in self.graph:
                 for v, data in self.graph[u].items():

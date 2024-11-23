@@ -15,7 +15,7 @@ class AdjacencyMatrix:
     def add_edge(self, u_node: int, v_node: int, weight: float = 1):
         """Adds an edge to the adjacency matrix."""
         self.matrix[u_node - 1][v_node - 1] = weight
-        if weight == 1:  # Assuming undirected graph if weight = 1
+        if weight == 1:
             self.matrix[v_node - 1][u_node - 1] = weight
 
     def get_representation(self):
