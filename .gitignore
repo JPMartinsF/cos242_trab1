@@ -1,5 +1,6 @@
 data/part_1/grafo*
 data/part_2/grafo*
+data/part_3/grafo*
 core/__pycache__
 Pip*
 .pre-commit-config.yaml

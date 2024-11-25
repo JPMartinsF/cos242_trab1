@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+import random
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -59,24 +61,41 @@ def test_ford_fulkerson(graph: Graph, source: int, sink: int) -> None:
         print("Ford-Fulkerson algorithm is only applicable to directed graphs.")
 
 if __name__ == "__main__":
-    test_graph_path = os.path.join("data", "part_2", "test_graph.txt")
-    test_info_path = os.path.join("data", "part_2", "test_graph_info.txt")
+    graph_n = "4"
+    test_graph_path = os.path.join("data", "part_3", f"grafo_rf_{graph_n}.txt")
+    test_info_path = os.path.join("data", "part_3", f"grafo_rf_{graph_n}.txt")
 
-    print("\n--- Adjacency List ---")
+    # print("\n--- Adjacency List ---")
     graph_list = test_read(test_graph_path, representation="Adjacency List", weighted=True, directed=True)
 
-    # Test graph metrics and info writing
-    test_info_file(graph_list, test_info_path)
+    # # Test graph metrics and info writing
+    # test_info_file(graph_list, test_info_path)
 
-    # Test BFS and DFS
-    test_bfs(graph_list, start_node=1)
-    test_dfs(graph_list, start_node=1)
+    # # Test BFS and DFS
+    # test_bfs(graph_list, start_node=1)
+    # test_dfs(graph_list, start_node=1)
 
-    # Test Dijkstra's algorithm
-    test_dijkstra(graph_list, start_node=1)
+    # # Test Dijkstra's algorithm
+    # test_dijkstra(graph_list, start_node=1)
 
     # Test Ford-Fulkerson algorithm
-    test_ford_fulkerson(graph_list, source=1, sink=5)
+    # test_ford_fulkerson(graph_list, source=1, sink=5)
+
+    # Case Studies Part 3
+    start_time = time.time()
+    RUNS = 1
+
+    for i in range(RUNS):
+        source = 1 # random.randint(0, graph_list.size)
+        sink = 2 #random.randint(0, graph_list.size)
+
+        while sink == source:
+            sink = random.randint(0, graph_list.size)
+
+        test_ford_fulkerson(graph_list, source=source, sink=sink)
+
+    elapsed_time = (time.time() - start_time)
+    print("Time spent:", elapsed_time/RUNS, "seconds")
 
 '''
 test_graph
